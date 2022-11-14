@@ -26,23 +26,7 @@ def makeDictionary():
         print("Who's score do you want to look up")
         userInput = input()
         print(scoreDict[userInput.lower()])
-
-
-    for x in names:
-        scoreDict[x] = scores[names.index(x)]
-    userAdd = True
-    while userAdd:
-        print("Do you want to add more to this list? y/n")
-        userInput = str(input())
-        if userInput.lower() == 'n':
-            userAdd = False
-            modifySortedDict()
-        else:
-            addValue()
-        print(scoreDict)
-        print(scoreDict['barb'])
-        sortedDict = sorted(scoreDict)
-
+        
     def modifySortedDict():
         sortedDict = sorted(scoreDict)
         print("Do you want to add, delete, query, print or exit?")
@@ -60,8 +44,23 @@ def makeDictionary():
             print(sortedDict)
         elif userInput.lower() == 'exit':
             print()
+
+    for x in names:
+        scoreDict[x] = scores[names.index(x)]
+    userAdd = True
+    while userAdd:
+        print(scoreDict)
+        print("Do you want to add more to this list? y/n")
+        userInput = str(input())
+        if userInput.lower() == 'n':
+            userAdd = False
+            modifySortedDict()
+        else:
+            addValue()
+        sortedDict = sorted(scoreDict)
             
 makeDictionary()
 
 # 0001 11/14/2022
 ## END Omar A. Student here (11/14/2022)
+# AlphaBeta/ manager: Sam Loomis / lead tech: Robert Burke/ project #: LE9000

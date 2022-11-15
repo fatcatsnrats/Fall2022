@@ -86,7 +86,7 @@ def create(i):
             'Skills': generator(3, 'Skills')}
         addition.append(tempDict)
         database.append(tempDict)
-    # storeData()
+    storeData()
     return addition
 
 # This method checks to see if any forbidden characters were passed,
@@ -168,7 +168,7 @@ def importData(filepath, seperator, ms1, ms2, id,
 
         importList.append(newDict)
         database.append(newDict)
-    # storeData()
+    storeData()
     print(importList)
 
 # This class acts as the controller and allows switching between frames.
@@ -880,10 +880,7 @@ class MainMenu(tk.Frame):
             "Press 'Print Reversed Data' to print all the entries\n"
             "   in the database.\n")
         canvas2.create_text(130, 60, font=('calibre', 7),
-        text="We are currently working on AWS cloud implimentation")
-
-        label3 = tk.Label(labelFrame,text="This ",
-            font=('calibre', 10), bg='#81b38e')
+            text="We are currently working on AWS cloud implimentation")
 
         button1 = tk.Button(buttonFrame, text="Import Data",
             command=lambda: controller.display('ImportData'),
@@ -924,6 +921,5 @@ class MainMenu(tk.Frame):
 
 storeData()
 loadData()
-create(9)
 app = DataBaseApp()
 app.mainloop()

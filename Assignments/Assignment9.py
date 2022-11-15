@@ -110,9 +110,11 @@ def databaseQuery(queryType, query):
 def checkInput(expected1, expected2, expected3):
     if expected3 == '':
         userInput = input().lower()
-        expected3, tempInput = False
+        expected3 = False
+        tempInput = False
     else:
-        tempInput, userInput = queryInput
+        tempInput = queryInput
+        userInput = queryInput
     while ((not (userInput == expected1))
         and (not (userInput == expected2))
         and (not (tempInput == expected3))):

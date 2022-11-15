@@ -2,6 +2,7 @@
 ## Begin Omar A. Student here (11/14/2022)
 
 import random
+
 dataBase = {}
 queryInput = ''
 name = ["Meera Hackett",
@@ -67,6 +68,7 @@ skills = ["Carpentry",
     "Burying",
     "Locksmith"]
 
+# This method generates all random fields.
 def numberGenerator(length, type):
     tempInt = ""
     for i in range(0,length):
@@ -97,7 +99,8 @@ def numberGenerator(length, type):
                 tempStr += ", "
         return tempStr
 
-
+# This method querys the database. It loops through the database and prints
+# any matching entries in the database.
 def databaseQuery(queryType, query):
     counter = 0
     for x in range(0, len(dataBase)):
@@ -107,6 +110,7 @@ def databaseQuery(queryType, query):
     if counter == 0:
         print("No results found.")
 
+# This method checks to make sure the users inputs are legal.
 def checkInput(expected1, expected2, expected3):
     if expected3 == '':
         userInput = input().lower()
@@ -131,6 +135,8 @@ def checkInput(expected1, expected2, expected3):
             userInput = input()
     return userInput.lower()
 
+# This method will either generate a database or manually add entries
+# to the database depending on what the user desires.
 def DatabaseGenerator():
     tempDict = {}
     print ("Do you want to 'randomly' generate a database?")
@@ -138,6 +144,7 @@ def DatabaseGenerator():
         counter = 0
         addPerson = True
         while addPerson:
+            # This is where entries are manually added.
             tempDict.update({"UniqueID" : numberGenerator(12, 'ID')})
             print("Input a name:")
             tempDict.update({"Name" : input()})
@@ -184,6 +191,7 @@ def DatabaseGenerator():
                 addPerson = False
 
     else:
+        # This is where the database is randomly generated
         for x in range(0,25):
             tempDict = {"UniqueID" : numberGenerator(12, 'ID'),
                 "Name" : name[x],
@@ -196,12 +204,15 @@ def DatabaseGenerator():
             dataBase.update({x: tempDict})
         print("Database generated!")
 
+# Just checks to see if the user wants to keep the program running.
 def userContinue():
     print("Do you want to keep the program running?")
     if checkInput('yes', 'no', '') == 'no':
         return False
     return True
 
+# This method allows the user to either print or query the database. It keeps
+# asking the user whether they want to print or query until the user quits.
 def main():
     DatabaseGenerator()
     queryType = ''

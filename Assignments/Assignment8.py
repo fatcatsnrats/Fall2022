@@ -5,6 +5,7 @@ def issue1():
     print('Enter a number')
     userInt = ((((int(input()) + 2) * 3) - 6) / 3)
 
+# Customer needs to know what happens when you:
 def issue2():
     var1 = 7.0
     var2 = 5
@@ -16,6 +17,7 @@ def issue2():
 
     print(30-3**2+8/3**2*10)
 
+# Customer needs to know what happens when you:
 def issue3():
     print('Enter anything:')
     userInput = input()
@@ -32,6 +34,7 @@ def issue3():
     except:
         print('Unable to print float')
 
+# Customer needs to know what happens when you:
 def issue4():
     a = 2**2**3
     b = 2**(2**3)
@@ -47,6 +50,7 @@ def issue4():
     else:
         print("None of the expressions produce the same output")
 
+# This is a simple game of chance.
 def issue5():
     import random
 
@@ -75,9 +79,11 @@ def issue5():
 
     playGame()
 
+# Password simulator that tosses out bad passwords.
 def issue6():
     import random
 
+    # checks to see if passwords are good.
     def passwordAcceptable(password):
         if "1234" in password:
             return False
@@ -89,6 +95,7 @@ def issue6():
             return False
         return True
 
+    # main loop that generates passwords.
     def main():
         for i in range(0,44):
             password = ""
@@ -101,6 +108,7 @@ def issue6():
 
     main()
 
+# This method calculates process capability for the customer.
 def issue7():
     usl = 17.5
     lsl = 15.5

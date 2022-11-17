@@ -1,0 +1,47 @@
+employeeInfo = [1121, "Jackie Grainger", 22.22,
+    1122, "Jignesh Thrakkar", 25.25,
+    1127, "Dion Green", 28.75, False,
+    24.32, 1132, "Jacob Gerber",
+    "Sarah Sanderson", 23.45, 1137, True,
+    "Brandon Heck", 1138, 25.84, True,
+    1152, "David Toma", 22.65,
+    23.75, 1157, "Charles King", False,
+    "Jackie Grainger", 1121, 22.22, False,
+    22.65, 1152, "David Toma"]
+
+database = []
+
+def dataSort(arr):
+    employeeDict = {}
+    lineIndex = 0
+
+    
+    # Checks to see whether all employee information is in the dictionary.
+    # If it is, it will append the current dictionary to
+    # the 'database' list and clear the current dictionary.
+    def checkLine():
+        if ((lineIndex >= 2) and (not isinstance()):
+            lineIndex = 0
+            database.append(employeeDict)
+            employeeDict.clear()
+        else:
+            lineIndex += 1
+
+
+    for x in range(0, len(arr)):
+        if isinstance(arr[x], bool):
+            employeeDict['(Unknown field):'] = arr[x]
+        elif isinstance(arr[x], int):
+            employeeDict['Employee ID:'] = arr[x]
+        elif isinstance(arr[x], str):
+            employeeDict['Employee Name:'] = arr[x]
+        elif isinstance(arr[x], float):
+            employeeDict['Employee Hourly Wage:'] = arr[x]
+        
+        checkLine()
+
+
+        
+
+dataSort(employeeInfo)
+print(database)

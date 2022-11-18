@@ -1,25 +1,30 @@
 import math
 
+# This methed checks to see if the float passed to it is a prime number.
+# It returns a boolean value. If it's argument is bigger than 1 and
+# cannot be divided by any whole number other than 1, it returns True.
+# Otherwise it returns False.
 def primeNumber(num):
     if num > 1:
         for x in range(2, int(num)):
             if ((int(num) % x) == 0):
                 return False
-    return True
+        return True
+    return False
 
 def application():
     playing = True
     print("Enter 'stop' to stop playing.")
-    while playing:
-        userInput = None
-        print('Enter any positive rational number.')
-        try:
-            userInput = float(input())
-        except:
-            print('That was not a rational number.')
-        if (not isinstance(userInput, str)
-            and not (userInput == None)):
 
+    while playing:
+        print('Enter any positive rational number.')
+        userInput = input()
+
+        # This try catch filters out strings by converting the user's input
+        # into a float. A string will cause an error which will cause
+        # the program to skip ahead.
+        try:
+            userInput = float(userInput)
             if userInput > 0:
                 print(math.ceil(userInput))
                 print(math.floor(userInput))
@@ -30,11 +35,15 @@ def application():
                     print('This number is not a prime number')
             else:
                 print('That rational number was not positive.')
-        else:
-            if (not (userInput == None) and
-                userInput.lower() == 'stop'):
-
+        except:
+            # The program skips ahead to here once it received a string
+            # and checks to see whether the user wants to stop the program.
+            # If they dont, the program will tell the user
+            # they did not enter a rational number.
+            if userInput.lower() == 'stop':
                 print('Thanks for playing!')
                 playing = False
+            else:
+                print('That was not a rational number.')
 
 application()

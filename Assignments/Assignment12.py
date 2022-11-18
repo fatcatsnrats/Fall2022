@@ -10,6 +10,8 @@ employeeInfo = [1121, "Jackie Grainger", 22.22,
     22.65, 1152, "David Toma"]
 
 database = []
+underpaidSalaries = []
+companyRaises = []
 
 def dataSort(arr):
     employeeDict = {}
@@ -58,7 +60,42 @@ def dataSort(arr):
         except:
             checkDuplicate()
 
+def totalHourly():
+    for x in database:
+        x['total_hourly_rate'] = round(x['Employee Hourly Wage:'] * 1.3, 2)
+
+        if ((x['total_hourly_rate'] >= 28.15)
+            and (x['total_hourly_rate'] <= 30.65)):
+
+            underpaidSalaries.append(x)
+
+def calculateRaise():
+    for x in underpaidSalaries:
+        hourly = x['Employee Hourly Wage:']
+        raiseDict = {}
+        
+        if (hourly >= 22 and hourly <= 24):
+            raiseDict['Employee Name:'] = x['Employee Name:']
+            raiseDict['After Raise:'] = round(hourly * 1.05, 2)
+        elif hourly <= 26:
+            raiseDict['Employee Name:'] = x['Employee Name:']
+            raiseDict['After Raise:'] = round(hourly * 1.04, 2)
+        elif hourly <= 28:
+            raiseDict['Employee Name:'] = x['Employee Name:']
+            raiseDict['After Raise:'] = round(hourly * 1.03, 2)
+        else:
+            raiseDict['Employee Name:'] = x['Employee Name:']
+            raiseDict['After Raise:'] = round(hourly * 1.02, 2)
+        
+        companyRaises.append(raiseDict)
         
 
 dataSort(employeeInfo)
+totalHourly()
+calculateRaise()
 print(database)
+print('\n')
+print(underpaidSalaries)
+print('\n')
+print(companyRaises)
+print('\n')

@@ -15,31 +15,48 @@ def dataSort(arr):
     employeeDict = {}
     lineIndex = 0
 
-    
-    # Checks to see whether all employee information is in the dictionary.
-    # If it is, it will append the current dictionary to
-    # the 'database' list and clear the current dictionary.
-    def checkLine():
-        if ((lineIndex >= 2) and (not isinstance()):
-            lineIndex = 0
-            database.append(employeeDict)
-            employeeDict.clear()
+    # Checks to see if employee is already in database.
+    def checkDuplicate():
+        if employeeDict.copy() in database:
+            return
         else:
-            lineIndex += 1
+            tempInt = employeeDict.copy()['Employee ID:']
 
+            # Checks to see if incomplete employee data already in database.
+            for i in range(len(database)-1):
+                currentDict = database[i]
+                if currentDict['Employee ID:'] == tempInt:
+                    database.pop(i)
+            
+            database.append(employeeDict.copy())
 
     for x in range(0, len(arr)):
         if isinstance(arr[x], bool):
             employeeDict['(Unknown field):'] = arr[x]
+            lineIndex = 0
+            checkDuplicate()
+            employeeDict.clear()
         elif isinstance(arr[x], int):
             employeeDict['Employee ID:'] = arr[x]
+            lineIndex += 1
         elif isinstance(arr[x], str):
             employeeDict['Employee Name:'] = arr[x]
+            lineIndex += 1
         elif isinstance(arr[x], float):
             employeeDict['Employee Hourly Wage:'] = arr[x]
-        
-        checkLine()
+            lineIndex += 1
 
+        # Checks to see whether all employee information is in the dictionary.
+        # If it is, it will append the current dictionary to
+        # the 'database' list and clear the current dictionary.
+        # The try: and except: is for the end of the list.
+        try:
+            if ((lineIndex >= 3) and (not isinstance(arr[x+1], bool))):
+                lineIndex = 0
+                checkDuplicate()
+                employeeDict.clear()
+        except:
+            checkDuplicate()
 
         
 

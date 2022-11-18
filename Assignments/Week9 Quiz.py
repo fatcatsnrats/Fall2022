@@ -17,7 +17,7 @@ def application():
     print("Enter 'stop' to stop playing.")
 
     while playing:
-        print('Enter any positive rational number.')
+        print('\nEnter any positive rational number.')
         userInput = input()
 
         # This try catch filters out strings by converting the user's input
@@ -26,13 +26,10 @@ def application():
         try:
             userInput = float(userInput)
             if userInput > 0:
-                print(math.ceil(userInput))
-                print(math.floor(userInput))
-                print(bin(int(userInput)))
-                if primeNumber(userInput):
-                    print('This number is a prime number')
-                else:
-                    print('This number is not a prime number')
+                print('\nCeiling:', math.ceil(userInput),
+                    '\nFloor:', math.floor(userInput),
+                    '\nBinary:', bin(int(userInput)),
+                    '\nPrime:', primeNumber(userInput))
             else:
                 print('That rational number was not positive.')
         except:

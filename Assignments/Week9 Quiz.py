@@ -31,16 +31,16 @@ def application():
                     '\nBinary:', bin(int(userInput)),
                     '\nPrime:', primeNumber(userInput))
             else:
-                print('That rational number was not positive.')
+                print('\nThat rational number was not positive.')
         except:
             # The program skips ahead to here once it receivs a string
             # and checks to see whether the user wants to stop the program.
             # If they dont, the program will tell the user
             # they did not enter a rational number.
             if userInput.lower() == 'stop':
-                print('Thanks for playing!')
+                print('\nThanks for playing!')
                 playing = False
             else:
-                print('That was not a rational number.')
+                print('\nThat was not a rational number.')
 
 application()

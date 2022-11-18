@@ -14,10 +14,9 @@ def primeNumber(num):
 
 def application():
     playing = True
-    print("Enter 'stop' to stop playing.")
-
     while playing:
-        print('\nEnter any positive rational number.')
+        print("\nEnter any positive rational number"
+            " or enter 'stop' to stop playing.")
         userInput = input()
 
         # This try catch filters out strings by converting the user's input

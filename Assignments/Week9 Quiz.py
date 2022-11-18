@@ -33,7 +33,7 @@ def application():
             else:
                 print('That rational number was not positive.')
         except:
-            # The program skips ahead to here once it received a string
+            # The program skips ahead to here once it receivs a string
             # and checks to see whether the user wants to stop the program.
             # If they dont, the program will tell the user
             # they did not enter a rational number.

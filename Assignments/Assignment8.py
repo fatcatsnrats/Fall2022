@@ -3,7 +3,7 @@
 
 def issue1():
     print('Enter a number')
-    userInt = ((((int(input()) + 2) * 3) - 6) / 3)
+    print(int((((int(input()) + 2) * 3) - 6) / 3), '\n')
 
 # Customer needs to know what happens when you:
 def issue2():
@@ -15,7 +15,7 @@ def issue2():
     y = 5
     print(x//y)
 
-    print(30-3**2+8/3**2*10)
+    print(30-3**2+8/3**2*10, '\n')
 
 # Customer needs to know what happens when you:
 def issue3():
@@ -46,70 +46,91 @@ def issue4():
     elif(b == c):
         print("Only expressions 'B' and 'C' produce the same output")
     elif(a == b):
-        print("Only expressions 'A' and 'B' produce the same output")
+        print("\nOnly expressions 'A' and 'B' produce the same output\n")
     else:
         print("None of the expressions produce the same output")
 
-# This is a simple game of chance.
+# This is a simple game of chance. The user starts with $100 in the bank
+# and can wager their money on chests. The user keeps playing until
+# they run out of money.
 def issue5():
     import random
 
-    def playGame():
-        bank = 100
-        while (bank > 0):
-            print("You grabbed a chest!")
-            print("How much would you like to wager?")
-            try:
-                wager = int(input())
-                if (wager <= bank):
-                    randInt = random.randint(0,10)
-                    if (randInt < 5):
-                        bank = bank - wager
-                        print("Sorry, you lost $", str(wager),
-                            "and now have $", str(bank),
-                            "in your bank.")
-                    elif (randInt < 10):
-                        bank = bank + wager
-                        print("Congratulations! You won $", str(wager),
-                            " and now have $", str(bank), " in your bank!")
-                    else:
-                        bank = bank + (3 * wager)
-                        print("Congratulations!!! You won 3X your wager! $",
-                            str(3 * wager), " has been added to your bank ",
-                            "for a total of $", str(bank), "!")
+    bank = 100
+    while (bank > 0):
+        print("You grabbed a chest!\nYou have $", bank, "in your bank. "
+            "How much would you like to wager?")
+        # Try catch is to filter out strings (with 'int(input())').
+        try:
+            wager = int(input())
+            # User cannot wager more than they have.
+            if (wager <= bank):
+                randInt = random.randint(0,10)
+                # Determines if the user won, lost, or got the jackpot.
+                if (randInt < 8):
+                    bank = bank - wager
+                    print("Sorry, you lost $", str(wager),
+                        "and now have $", str(bank),
+                        "in your bank.")
+                elif (randInt < 10):
+                    bank = bank + wager
+                    print("Congratulations! You won $", str(wager),
+                        " and now have $", str(bank), " in your bank!")
                 else:
-                    print("You dont have enough money for that!")
-            except:
-                print("Thats not a number")
+                    bank = bank + (3 * wager)
+                    print("Congratulations!!! You won 3X your wager! $",
+                        str(3 * wager), " has been added to your bank ",
+                        "for a total of $", str(bank), "!")
+            else:
+                print("You dont have enough money for that!")
+        except:
+            print("Thats not a number")
 
-    playGame()
 
 # Password simulator that tosses out bad passwords.
 def issue6():
     import random
 
-    # checks to see if passwords are good.
+    # Goes through 'rockyou.txt' and checks to see if the generated password
+    # matches one in the file. It returns a boolean value.
     def passwordAcceptable(password):
-        if "1234" in password:
-            return False
-        if "4321" in password:
-            return False
-        if "9876" in password:
-            return False
-        if "6789" in password:
-            return False
+        file = open(r'C:\Users\omara\Downloads\rockyou.txt', encoding='ANSI')
+        for x in file:
+            if password == x:
+                file.close()
+                return False
+        file.close()
         return True
-
-    # main loop that generates passwords.
+            
     def main():
-        for i in range(0,44):
+        for i in range(45):
             password = ""
-            for j in range(0,11):
-                password += str(random.randint(0,9))
+            # Randomly generates a number 0-9 and assigns it to 'randChar'
+            # then decides if it wants to add a letter, special character,
+            # or number based on the 'randChar'. Keeps going until the string
+            # its been building has a length of 12.
+            while len(password) < 13:
+                randChar = random.randint(0,9)
+                if randChar < 3:
+                    password += random.choice(['@', '!', "#", "$", "%", "^",
+                        "&", "*", "(", ")", "?", "/", '"', "<", ">", '-', ':',
+                        ';', '=', '+', '`', '~', '.'])
+                elif randChar < 6:
+                    password += str(random.randint(0,9))
+                else:
+                    password += chr(random.randint(33, 126))
+
+            # Calls the 'passwordAcceptable()' method and passes
+            # the generated password to check whether the generated password
+            # is a forbidden password. If it is not, the generated password
+            # is written to the 'PasswordArchive.txt' file
+            # and displayed to the user.
             if passwordAcceptable(password):
                 with open(r"C:\temp\PasswordArchive.txt", "a") as file:
                     file.write(password + "\n")
                     print(password)
+            else:
+                print('Forbidden password entered:', password)
 
     main()
 
@@ -152,7 +173,7 @@ def issue8():
     
     # This checks to see if all numbers provided by the customer are prime.
     for x in primeArr:
-        print(primeNumber(x))
+        print(x, primeNumber(x))
 
 def issue9():
     tipDict = {'poor': 0.1, 'decent': 0.15, 'good': 0.2, 'great': 0.25}
@@ -162,31 +183,22 @@ def issue9():
     
     # Keeps asking for the bill until you give a 'legal' answer (no strings).
     while not billLegal:
-        bill = input('\nHow much is you bill?\n')
+        bill = input('\nHow much was your bill?\n\n')
         # The try catch is to filter out strings.
         try:
             bill = float(bill)
             billLegal = True
             # Keeps asking for acceptable answer until one is entered.
             while not inputLegal:
-                print('Was the service: poor, decent, good, or great?\n')
+                print('\nWas the service: poor, decent, good, or great?\n')
                 userInput = input()
                 for x in [p, d, g, a]:
                     if userInput.lower() == x[0]:
-                        print('\nYou should tip $', round(bill * x[1], 2))
+                        print('\nA', int(x[1] * 100), '% tip would be $',
+                            round(bill * x[1], 2))
                         inputLegal = True
         except:
             print('\nInput a number.')
-
-issue1()
-issue2()
-issue3()
-issue4()
-# issue5()
-# issue6()
-# issue7()
-# issue8()
-issue9()
 
 # 0001 11/14/2022
 ## END Omar A. Student here (11/14/2022)

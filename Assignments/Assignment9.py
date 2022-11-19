@@ -68,9 +68,12 @@ skills = ["Carpentry",
     "Burying",
     "Locksmith"]
 
-# This method generates all random fields.
+# This method generates all random fields. It takes two arguments:
+# what type of field it needs to generate ('type') and how many
+# characters it needs to generate ('length').
 def numberGenerator(length, type):
     tempInt = ""
+
     for i in range(0,length):
         tempInt += str(random.randint(0,9))
 
@@ -110,29 +113,30 @@ def databaseQuery(queryType, query):
     if counter == 0:
         print("No results found.")
 
-# This method checks to make sure the users inputs are legal.
-def checkInput(expected1, expected2, expected3):
-    if expected3 == '':
+# This method checks to make sure the users inputs are legal
+# and takes two arguments.
+def checkInput(expected1, expected2):
+    userInput = input().lower()
+    while ((not (userInput == expected1))
+        and (not (userInput == expected2))):
+        print("That was not an acceptable response. Type '"
+            + expected1.capitalize() + "' or '" 
+            + expected2.capitalize() + "'.")
         userInput = input().lower()
-        expected3 = False
-        tempInput = False
-    else:
-        tempInput = queryInput
-        userInput = queryInput
+    return userInput.lower()
+
+# This method checks to make sure the users inputs are legal and takes
+# three arguments. I made these before I learned about *args.
+def checkInput3(expected1, expected2, expected3):
+    userInput = input().lower()
     while ((not (userInput == expected1))
         and (not (userInput == expected2))
-        and (not (tempInput == expected3))):
-        if not expected3:
-            print("That was not an acceptable response. Type '"
-                + expected1.capitalize() + "' or '" 
-                + expected2.capitalize() + "'.")
-            userInput = input()
-        else:
-            print("That was not an acceptable response. Type '"
-                + expected1.capitalize() + "', '" 
-                + expected2.capitalize() + "', or '" 
-                + expected3.capitlize() + "'.")
-            userInput = input()
+        and (not (userInput == expected3))):
+        print("That was not an acceptable response. Type '",
+            expected1.capitalize(), "', '",
+            expected3.capitalize(), "' or '", 
+            expected2.capitalize(), "'.")
+        userInput = input().lower()
     return userInput.lower()
 
 # This method will either generate a database or manually add entries
@@ -150,7 +154,6 @@ def DatabaseGenerator():
             tempDict.update({"Name" : input()})
             print("Input their address:")
             tempDict.update({"Address" : input()})
-
             print("Input their phone number without special characters:")
             tempInput = input()
             while isinstance(tempInput, int) == False:
@@ -161,7 +164,6 @@ def DatabaseGenerator():
                         + "without special characters:")
                     tempInput = input()
             tempDict.update({'Phone' : str(tempInput)})
-
             print("Input their Social Security Number "
                 + "without special characters:")
             tempInput = input()
@@ -174,20 +176,18 @@ def DatabaseGenerator():
                         + "Number without special characters:")
                     tempInput = input()
             tempDict.update({'Social Security Number' : str(tempInput)})
-            
             print("Is this person a manager?")
             tempDict.update({'Manager?' : 
-            checkInput('yes', 'no', '').capitalize()})
-
+            checkInput('yes', 'no').capitalize()})
             print("What is this persons job title?")
             tempDict.update({'Job Title' : input()})
             print("What skills does this person have?")
             tempDict.update({'Skills' : input()})
-
+            
             dataBase.update({counter : tempDict})
 
             print("Do you want to add another person to the database?")
-            if checkInput('yes', 'no', '') == 'no':
+            if checkInput('yes', 'no') == 'no':
                 addPerson = False
 
     else:
@@ -207,7 +207,7 @@ def DatabaseGenerator():
 # Just checks to see if the user wants to keep the program running.
 def userContinue():
     print("Do you want to keep the program running?")
-    if checkInput('yes', 'no', '') == 'no':
+    if checkInput('yes', 'no') == 'no':
         return False
     return True
 
@@ -220,7 +220,8 @@ def main():
     while databaseActive:
         print("Would you like to print all entries in the "
             + "database or query the database? Type 'Print' or 'Query'.")
-        if checkInput('print', 'query', '') == 'print':
+
+        if checkInput('print', 'query') == 'print':
             for x in range(0,len(dataBase)):
                 print(dataBase[x])
             databaseActive = userContinue()
@@ -228,8 +229,7 @@ def main():
             print("Do you want to query by Name, Skills,"
                 + " or whether or not a person is a manager?"
                 + " Type 'Name', 'Skills', or 'Manager'.")
-            queryInput = input().lower()
-            queryType = checkInput("name", "skills", "manager").capitalize()
+            queryType = checkInput3("name", "skills", "manager").capitalize()
             if queryInput.lower() == 'name':
                 print("What is the person's name?")
                 databaseQuery(queryType, input())
@@ -241,7 +241,7 @@ def main():
                 print("Are you looking for people who are managers"
                     + " or people who are not? "
                     + "Type 'Who are' or 'Who are not'.")
-                if (checkInput('who are', 'who are not', '') == 'who are'):
+                if (checkInput('who are', 'who are not') == 'who are'):
                     databaseQuery(queryType, 'Yes')
                 else:
                     databaseQuery(queryType, 'No')

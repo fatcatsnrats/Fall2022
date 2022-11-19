@@ -65,13 +65,18 @@ def issue5():
                     randInt = random.randint(0,10)
                     if (randInt < 5):
                         bank = bank - wager
-                        print("Sorry, you lost $" + str(wager) + " and now have $" + str(bank) + " in your bank.")
+                        print("Sorry, you lost $", str(wager),
+                            "and now have $", str(bank),
+                            "in your bank.")
                     elif (randInt < 10):
                         bank = bank + wager
-                        print("Congratulations! You won $" + str(wager) + " and now have $" + str(bank) + " in your bank!")
+                        print("Congratulations! You won $", str(wager),
+                            " and now have $", str(bank), " in your bank!")
                     else:
                         bank = bank + (3 * wager)
-                        print("Congratulations!!! You won 3X your wager! $" + str(3 * wager) + " has been added to your bank for a total of $" + str(bank) + "!")
+                        print("Congratulations!!! You won 3X your wager! $",
+                            str(3 * wager), " has been added to your bank ",
+                            "for a total of $", str(bank), "!")
                 else:
                     print("You dont have enough money for that!")
             except:
@@ -129,10 +134,59 @@ def issue7():
     print("CPL = " + str(cpl))
     print("Cpk = " + str(cpk))
 
+def issue8():
+    primeArr = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
+        59, 61, 67, 71, 73, 79, 83, 89, 97]
 
-issue5()
-issue6()
-issue7()
+    # This methed checks to see if the float passed to it is a prime number.
+    # It returns a boolean value. If it's argument is bigger than 1 and
+    # cannot be divided by any whole number other than 1, it returns True.
+    # Otherwise it returns False.
+    def primeNumber(num):
+        if num > 1:
+            for x in range(2, num):
+                if ((num % x) == 0):
+                    return False
+            return True
+        return False
+    
+    # This checks to see if all numbers provided by the customer are prime.
+    for x in primeArr:
+        print(primeNumber(x))
+
+def issue9():
+    tipDict = {'poor': 0.1, 'decent': 0.15, 'good': 0.2, 'great': 0.25}
+    p, d, g, a = tipDict.items()
+    billLegal = False
+    inputLegal = False
+    
+    # Keeps asking for the bill until you give a 'legal' answer (no strings).
+    while not billLegal:
+        bill = input('\nHow much is you bill?\n')
+        # The try catch is to filter out strings.
+        try:
+            bill = float(bill)
+            billLegal = True
+            # Keeps asking for acceptable answer until one is entered.
+            while not inputLegal:
+                print('Was the service: poor, decent, good, or great?\n')
+                userInput = input()
+                for x in [p, d, g, a]:
+                    if userInput.lower() == x[0]:
+                        print('\nYou should tip $', round(bill * x[1], 2))
+                        inputLegal = True
+        except:
+            print('\nInput a number.')
+
+issue1()
+issue2()
+issue3()
+issue4()
+# issue5()
+# issue6()
+# issue7()
+# issue8()
+issue9()
 
 # 0001 11/14/2022
 ## END Omar A. Student here (11/14/2022)

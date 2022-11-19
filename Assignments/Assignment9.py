@@ -123,7 +123,7 @@ def checkInput(expected1, expected2):
             + expected1.capitalize() + "' or '" 
             + expected2.capitalize() + "'.")
         userInput = input().lower()
-    return userInput.lower()
+    return userInput
 
 # This method checks to make sure the users inputs are legal and takes
 # three arguments. I made these before I learned about *args.
@@ -137,26 +137,35 @@ def checkInput3(expected1, expected2, expected3):
             expected3.capitalize(), "' or '", 
             expected2.capitalize(), "'.")
         userInput = input().lower()
-    return userInput.lower()
+    return userInput
 
 # This method will either generate a database or manually add entries
 # to the database depending on what the user desires.
-def DatabaseGenerator():
-    tempDict = {}
-    print ("Do you want to 'randomly' generate a database?")
-    if input().lower() == 'no':
+def DatabaseGenerator(*args, generate= False, userAnswer= None, tempDict= {}):
+    if not generate:
+        print ("Do you want to 'randomly' generate a database?")
+        userAnswer = input().lower()
+    if userAnswer == 'no':
         counter = 0
         addPerson = True
         while addPerson:
             # This is where entries are manually added.
-            tempDict.update({"UniqueID" : numberGenerator(12, 'ID')})
-            print("Input a name:")
+            tempInput = input('Input a Unique ID:\n')
+            while not isinstance(tempInput, int):
+                try:
+                    tempInput = int(tempInput)
+                except:
+                    print("That was not a number. Input their Unique ID "
+                        + "without special characters:")
+                    tempInput = input()
+            tempDict.update({"UniqueID" : str(tempInput)})
+            print("Input their name:")
             tempDict.update({"Name" : input()})
             print("Input their address:")
             tempDict.update({"Address" : input()})
             print("Input their phone number without special characters:")
             tempInput = input()
-            while isinstance(tempInput, int) == False:
+            while not isinstance(tempInput, int):
                 try:
                     tempInput = int(tempInput)
                 except:
@@ -186,13 +195,23 @@ def DatabaseGenerator():
             
             dataBase.update({counter : tempDict})
 
-            print("Do you want to add another person to the database?")
+            print("Do you want to manually add another person"
+                " to the database?")
             if checkInput('yes', 'no') == 'no':
+                print("Would you like to add any 'randomly'"
+                    " generated people to the database?")
+                if checkInput('yes', 'no') == 'yes':
+                    DatabaseGenerator(generate= True, userAnswer = 'yes',
+                        tempDict= tempDict)
                 addPerson = False
-
     else:
         # This is where the database is randomly generated
-        for x in range(0,25):
+        dictLen = 0
+        if generate:
+            dictLen = int(len(tempDict) / 8)
+            for x in range(dictLen):
+                dataBase.update({x: tempDict})
+        for x in range(25):
             tempDict = {"UniqueID" : numberGenerator(12, 'ID'),
                 "Name" : name[x],
                 "Address" : address[x],
@@ -201,7 +220,7 @@ def DatabaseGenerator():
                 "Manager?" : numberGenerator(1, "Manager"),
                 "Job Title" : numberGenerator(1, "Job Title"),
                 "Skills" : numberGenerator(3, "Skills")}
-            dataBase.update({x: tempDict})
+            dataBase.update({x + dictLen: tempDict})
         print("Database generated!")
 
 # Just checks to see if the user wants to keep the program running.
@@ -229,22 +248,22 @@ def main():
             print("Do you want to query by Name, Skills,"
                 + " or whether or not a person is a manager?"
                 + " Type 'Name', 'Skills', or 'Manager'.")
-            queryType = checkInput3("name", "skills", "manager").capitalize()
-            if queryInput.lower() == 'name':
+            queryType = checkInput3("name", "skills", "manager")
+            if queryType == 'name':
                 print("What is the person's name?")
-                databaseQuery(queryType, input())
-            elif queryInput.lower() == 'skills':
+                databaseQuery(queryType.capitalize(), input())
+            elif queryType == 'skills':
                 print("What skills do you want to query?")
-                databaseQuery(queryType, input())
-            elif queryInput.lower() == 'manager':
+                databaseQuery(queryType.capitalize(), input())
+            elif queryType == 'manager':
                 queryType += '?'
                 print("Are you looking for people who are managers"
                     + " or people who are not? "
                     + "Type 'Who are' or 'Who are not'.")
                 if (checkInput('who are', 'who are not') == 'who are'):
-                    databaseQuery(queryType, 'Yes')
+                    databaseQuery(queryType.capitalize(), 'Yes')
                 else:
-                    databaseQuery(queryType, 'No')
+                    databaseQuery(queryType.capitalize(), 'No')
             databaseActive = userContinue()
 
 main()

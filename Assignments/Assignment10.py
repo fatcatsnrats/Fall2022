@@ -4,15 +4,14 @@
 def issue1():
     pi = 3.14159
 
+    # This method gets passed the radius and returns the volume of the sphere.
     def sphere_volume(r):
         return (((4/3)*pi)*((r*r)*r))
 
-    def main():
-        print(sphere_volume(5))
-
-    main()
+    print(sphere_volume(5))
 
 def issue2():
+    # This method prints a range of numbers.
     def print_range(start, end):
         if start > end:
             start, end = end, start
@@ -25,6 +24,7 @@ def issue2():
     main()
 
 def issue3():
+    # This method finds the greatest common divisor.
     def gcd(a,b):
         if b == 0:
             return a
@@ -74,6 +74,11 @@ def issue5():
         if 'Mastercard' in temp['Payment_Type']:
             sales_data.pop(x)
     print(sales_data)
+
+issue1()
+issue2()
+issue3()
+issue4()
 issue5()
 
 # 0001 11/14/2022

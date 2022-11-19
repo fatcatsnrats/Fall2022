@@ -1,3 +1,6 @@
+# 0001 11/17/2022
+## Begin Omar A. Student here (11/17/2022)
+
 employeeInfo = [1121, "Jackie Grainger", 22.22,
     1122, "Jignesh Thrakkar", 25.25,
     1127, "Dion Green", 28.75, False,
@@ -32,6 +35,8 @@ def dataSort(arr):
             
             database.append(employeeDict.copy())
 
+    # Adds entries from imported list into a dictionary which
+    # may later be appended to the 'database' list.
     for x in range(0, len(arr)):
         if isinstance(arr[x], bool):
             employeeDict['(Unknown field):'] = arr[x]
@@ -61,19 +66,25 @@ def dataSort(arr):
             checkDuplicate()
 
 def totalHourly():
+    # Goes through the 'database' list calculating the total hourly rate
+    # and determining whether the employee is underpaid based on
+    # their total hourly rate. If they are underpaid, it adds them to
+    # the 'underpaidSalaries' list.
     for x in database:
         x['total_hourly_rate'] = round(x['Employee Hourly Wage:'] * 1.3, 2)
-
         if ((x['total_hourly_rate'] >= 28.15)
             and (x['total_hourly_rate'] <= 30.65)):
-
             underpaidSalaries.append(x)
 
 def calculateRaise():
+    # Goes through the 'underpaidSalaries' list.
     for x in underpaidSalaries:
         hourly = x['Employee Hourly Wage:']
         raiseDict = {}
-        
+
+        # Determines how much of a raise the employee should get and adds
+        # the employee's name and their wage said raise to
+        # the 'companyRaises' list.
         if (hourly >= 22 and hourly <= 24):
             raiseDict['Employee Name:'] = x['Employee Name:']
             raiseDict['After Raise:'] = round(hourly * 1.05, 2)
@@ -86,16 +97,15 @@ def calculateRaise():
         else:
             raiseDict['Employee Name:'] = x['Employee Name:']
             raiseDict['After Raise:'] = round(hourly * 1.02, 2)
-        
         companyRaises.append(raiseDict)
         
 
 dataSort(employeeInfo)
 totalHourly()
 calculateRaise()
-print(database)
-print('\n')
-print(underpaidSalaries)
-print('\n')
-print(companyRaises)
-print('\n')
+print(database, '\n')
+print(underpaidSalaries,'\n')
+print(companyRaises, '\n')
+
+# 0001 11/17/2022
+## END Omar A. Student here (11/17/2022)

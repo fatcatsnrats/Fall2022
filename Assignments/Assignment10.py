@@ -83,3 +83,4 @@ issue5()
 
 # 0001 11/14/2022
 ## END Omar A. Student here (11/14/2022)
+# HALF-LIFE / Ron Bass / John Richards Sr. / After-Burner Elite

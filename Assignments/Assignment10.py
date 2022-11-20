@@ -11,17 +11,27 @@ def issue1():
     print(sphere_volume(5))
 
 def issue2():
-    # This method prints a range of numbers.
-    def print_range(start, end):
-        if start > end:
-            start, end = end, start
-        for x in range(start, end + 1):
-            print(x)
+    # This method prints any range of numbers the use inputs.
+    def print_range():
+        playing = True
+        while playing:
+            print("Input two numbers or enter 'exit' to quit.\n")
+            try:
+                start = int(input())
+                end = int(input())
+                if start > end:
+                    tempList = [i for i in range(end, start + 1)]
+                    rangeList = tempList[::-1]
+                else:
+                    tempList = [i for i in range(start, end + 1)]
+                    rangeList = tempList
+                print(rangeList)
+            except:
+                playing = False
+                print('Thanks for playing!')
 
-    def main():
-        print_range(int(input()), int(input()))
-    
-    main()
+    print_range()
+
 
 def issue3():
     # This method finds the greatest common divisor.
@@ -32,11 +42,20 @@ def issue3():
             return gcd(b, a % b)
 
     def main():
-        print(gcd(int(input()), int(input())))
+        playing = True
+        while playing:
+            try:
+                print('Enter two numbers to find their greatest'
+                    ' common divisor or enter "exit".')
+                print(gcd(int(input()), int(input())))
+            except:
+                print('Thanks for playing!')
+                playing = False
     main()
 
 def issue4():
-    import csv, json
+    import csv
+    import json
 
     csvFilePath = r"C:\temp\SalesJan2009.csv"
     jsonFilePath = r"C:\temp\transaction_data.json"
@@ -44,42 +63,50 @@ def issue4():
 
     with open(csvFilePath) as csvFile:
         csvReader = csv.reader(csvFile)
+
+        # Adds all entries to 'sales_data' list.
         for row in csvReader:
-            sales_data.append({'Transaction_date' : row[0].strip('"'),
-            'Product' : row[1].strip('"'), 'Price' : row[2].strip('"'),
-            'Payment_Type' : row[3].strip('"'), 'Name' : row[4].strip('"'),
-            'City' : row[5].strip('"'), 'State' : row[6].strip('"'),
-            'Country' : row[7].strip('"')})
-    
+            sales_data.append({'Transaction_date': row[0].strip('"'),
+                'Product': row[1].strip('"'), 'Price': row[2].strip('"'),
+                'Payment_Type': row[3].strip('"'), 'Name': row[4].strip('"'),
+                'City': row[5].strip('"'), 'State': row[6].strip('"'),
+                'Country': row[7].strip('"')})
+        print(sales_data)
+
+    # Writes 'sales_data' list to json file
     with open(jsonFilePath, 'w') as jsonFile:
         jsonFile.write(json.dumps(sales_data))
 
 def issue5():
-    import csv, json
+    import csv
 
     csvFilePath = r"C:\temp\SalesJan2009.csv"
-    jsonFilePath = r"C:\temp\transaction_data.json"
-    sales_data = [{}]
+    sales_data = []
+    manipulatedData = []
 
     with open(csvFilePath) as csvFile:
         csvReader = csv.reader(csvFile)
-        for row in csvReader:
-            sales_data.append({'Transaction_date' : row[0].strip('"'),
-            'Product' : row[1].strip('"'), 'Price' : row[2].strip('"'),
-            'Payment_Type' : row[3].strip('"'), 'Name' : row[4].strip('"'),
-            'City' : row[5].strip('"'), 'State' : row[6].strip('"'),
-            'Country' : row[7].strip('"')})
-    for x in range(0, len(sales_data)):
-        temp = sales_data[x]
-        if 'Mastercard' in temp['Payment_Type']:
-            sales_data.pop(x)
-    print(sales_data)
 
-issue1()
-issue2()
-issue3()
-issue4()
-issue5()
+        # Adds all entries to 'sales_data' list.
+        for row in csvReader:
+            sales_data.append({'Transaction_date': row[0].strip('"'),
+                'Product': row[1].strip('"'), 'Price': row[2].strip('"'),
+                'Payment_Type': row[3].strip('"'), 'Name': row[4].strip('"'),
+                'City': row[5].strip('"'), 'State': row[6].strip('"'),
+                'Country': row[7].strip('"')})
+
+    # List comprehension to check whether or not tansaction
+    # used Mastercard. Appends False to 'copySD' list if Mastercard is used.
+    copySD = [False if i['Payment_Type'] == 'Mastercard'
+        else True for i in sales_data]
+
+    # If 'copySD' is True, it gets appended to 'manipulatedData'.
+    for x in range(len(sales_data)):
+        if copySD[x]:
+            manipulatedData.append(sales_data[x])
+
+    # Prints original import without transactions using 'Mastercard'.
+    print(manipulatedData)
 
 # 0001 11/14/2022
 ## END Omar A. Student here (11/14/2022)

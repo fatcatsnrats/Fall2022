@@ -19,25 +19,22 @@ companyRaises = []
 def dataSort(arr):
     employeeDict = {}
     lineIndex = 0
-
     # Checks to see if employee is already in database.
     def checkDuplicate():
         if employeeDict.copy() in database:
             return
         else:
             tempInt = employeeDict.copy()['Employee ID:']
-
             # Checks to see if incomplete employee data already in database.
             for i in range(len(database)-1):
                 currentDict = database[i]
                 if currentDict['Employee ID:'] == tempInt:
                     database.pop(i)
-            
             database.append(employeeDict.copy())
 
     # Adds entries from imported list into a dictionary which
     # may later be appended to the 'database' list.
-    for x in range(0, len(arr)):
+    for x in range(len(arr)):
         if isinstance(arr[x], bool):
             employeeDict['(Unknown field):'] = arr[x]
             lineIndex = 0
@@ -77,11 +74,9 @@ def totalHourly():
             underpaidSalaries.append(x)
 
 def calculateRaise():
-    # Goes through the 'underpaidSalaries' list.
     for x in underpaidSalaries:
         hourly = x['Employee Hourly Wage:']
         raiseDict = {}
-
         # Determines how much of a raise the employee should get and adds
         # the employee's name and their wage said raise to
         # the 'companyRaises' list.

@@ -69,6 +69,15 @@ def caesarCipher():
                 decryptedText += ' '
         print(decryptedText)
 
+    def method2():
+        abcStr = ''
+        shiftedList = []
+        for x in abc:
+            abcStr += x
+        for x in range(3):
+            shiftedList = abc
+            shiftedList.append(shiftedList.pop(0))
+        
     method1()
 
 caesarCipher()

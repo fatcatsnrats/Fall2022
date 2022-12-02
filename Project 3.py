@@ -39,4 +39,37 @@ def vigenereCipher():
     vigenereTableGen()
     main()
 
-vigenereCipher()
+def caesarCipher():
+    def method1():
+        encryptedText = ''
+        decryptedText = ''
+        shift = int(input('How many positions do you want to shift?\n'))
+        while shift > 26:
+            shift -= 26
+
+        text = input('Enter what you what to cipher.\n')
+        for x in text:
+            if not x == ' ':
+                charIndex = ord(x.lower()) + shift - 97
+                if charIndex > 24:
+                    charIndex -= 26
+                encryptedText += abc[charIndex]
+            else:
+                encryptedText += ' '
+        print(encryptedText)
+        input('Press ENTER to decrypt.')
+
+        for x in encryptedText:
+            if not x == ' ':
+                charIndex = ord(x) - shift - 97
+                if charIndex < 0:
+                    charIndex += 26
+                decryptedText += abc[charIndex]
+            else:
+                decryptedText += ' '
+        print(decryptedText)
+
+    method1()
+
+caesarCipher()
+# vigenereCipher()

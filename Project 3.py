@@ -150,9 +150,71 @@ def caesarCipher():
     else:
         method2()
 
+# Caesars cipher but it divides the message into multiple pieces
+# and moves the pieces around.
+def caesarSliced():
+    text = input('Enter a message to be ciphered.\n').lower()
+    shift = int(input('How many positions do you want to shift?\n'))
+    encryptedText = ''
+    decryptedText = ''
+
+    def switcharoo(inputText):
+        finalText = ''
+        for i in range(2, 21):
+            if (((len(inputText) % i) == 0)
+                    and (len(inputText) <= (i * 4))
+                    and not (i >= (len(inputText))) / 3):
+                tempList = []
+                front = 0
+                back = 0
+                for j in range(i):
+                    back += int(len(inputText) / i)
+                    tempList.append(inputText[front:back])
+                    front += int(len(inputText) / i)
+                for j in range(i):
+                    if ((j % 2) == 0):
+                        if (i - j) > 1:
+                            finalText += tempList[j + 1]
+                        else:
+                            finalText += tempList[j]
+                    else:
+                        if (i - j) > 1:
+                            finalText += tempList[j - 1]
+                        else:
+                            finalText += tempList[0]
+                return finalText
+
+    # Encryption
+    for x in text:
+        if not x == ' ':
+            charIndex = ord(x.lower()) + shift - 97
+            if charIndex > 24:
+                charIndex -= 26
+            encryptedText += abc[charIndex]
+        else:
+            encryptedText += ' '
+    encryptedText = switcharoo(encryptedText)
+    print(encryptedText)
+
+    # Decryption
+    input('Press ENTER to decrypt.')
+    encryptedText = switcharoo(encryptedText)
+    for x in encryptedText:
+        if not x == ' ':
+            charIndex = ord(x) - shift - 97
+            if charIndex < 0:
+                charIndex += 26
+            decryptedText += abc[charIndex]
+        else:
+            decryptedText += ' '
+    print(decryptedText)
+
+
+
 # Generates the alpahabet and appends it to 'abc' list.
 for x in range(26):
     abc.append(chr(97 + x))
 
 # caesarCipher()
-vigenereCipher()
+# vigenereCipher()
+caesarSliced()

@@ -1,9 +1,11 @@
-abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+
+abc = []
 
 def vigenereCipher():
     vTable = []
 
+    # Generates a vigenere table and sets it to 'vTable'.
     def vigenereTableGen():
         for count, i in enumerate(abc):
             tempList = []
@@ -14,6 +16,8 @@ def vigenereCipher():
                 tempList.append(chr(charIndex + count))
             vTable.append(tempList)
 
+    # Makes the length of the key equal to the length of the encryted text.
+    # Does this by repeating the key for the length of the encryted text.
     def keyLength(text, key):
         if not len(text) == len(key):
             for x in range(len(text) - len(key)):
@@ -22,24 +26,52 @@ def vigenereCipher():
                 key += key[x]
         return key
 
+    # Takes inputs from the user, then ciphers the user-inputted text.
+    # It does this by looping for the length of the text and converting
+    # the current character from both the user-inputted text and
+    # the string returned by the 'keyLength' method into indexes of abc.
+    # Once it has the indexes, it uses them along with the vTable list
+    # to generate a new character which is then appended to
+    # the 'encryptedText' string.
     def main():
         encryptedText = ''
+        decryptedText = ''
         key = ' '
-        text = input('Enter what you want to cipher.\n')
+        text = 'abcdefg'
+        # text = input('Enter what you want to cipher.\n')
+        #  input('Enter a keyword (no spaces).\n')
         while ' ' in key:
-            key = keyLength(text, input('Enter a keyword (no spaces).\n'))
-        for count, x in enumerate(text):
-            charIndex = ord(x.lower())
-            if charIndex > 90:
-                encryptedText += vTable[charIndex - 97][ord(key[count]) - 97]
-            else:
-                encryptedText += x
-        print(encryptedText)
+            key = keyLength(text, 'no')
+        
+        def encrypt(encryptedText):
+            for count, x in enumerate(text):
+                charIndex = ord(x.lower()) - 97
+                if charIndex >= 0:
+                    encryptedText += vTable[charIndex][ord(key[count]) - 97]
+                else:
+                    encryptedText += x
+            print(encryptedText)
+            input('Press ENTER to decrpyt.')
+            decrypt(encryptedText, decryptedText)
+
+
+        def decrypt(encryptedText, decryptedText):
+            for count, x in enumerate(encryptedText):
+                charIndex = ord(x.lower()) - 97
+                if charIndex >= 0:
+                    decryptedText += abc[vTable[ord(key[count]) - 97].index(x)]
+                else:
+                    decryptedText += x
+            print(decryptedText)
+
+        encrypt(encryptedText)
 
     vigenereTableGen()
     main()
 
 def caesarCipher():
+    # Collects the text that needs to be ciphered, the number of positions
+    # the characters need to be shifted, and what method is to be used.
     shift = int(input('How many positions do you want to shift?\n'))
     while shift > 26:
             shift -= 26
@@ -118,5 +150,9 @@ def caesarCipher():
     else:
         method2()
 
-caesarCipher()
-# vigenereCipher()
+# Generates the alpahabet and appends it to 'abc' list.
+for x in range(26):
+    abc.append(chr(97 + x))
+
+# caesarCipher()
+vigenereCipher()

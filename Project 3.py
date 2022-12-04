@@ -1,5 +1,3 @@
-
-
 abc = []
 
 def vigenereCipher():
@@ -173,10 +171,10 @@ def caesarSliced():
                     front += int(len(inputText) / i)
                 for j in range(i):
                     if ((j % 2) == 0):
-                        if (i - j) > 1:
-                            finalText += tempList[j + 1]
-                        else:
+                        if ((i - j) < 2) and not ((i % 2) == 0):
                             finalText += tempList[j]
+                        else:
+                            finalText += tempList[j + 1]
                     else:
                         if (i - j) > 1:
                             finalText += tempList[j - 1]
@@ -208,8 +206,6 @@ def caesarSliced():
         else:
             decryptedText += ' '
     print(decryptedText)
-
-
 
 # Generates the alpahabet and appends it to 'abc' list.
 for x in range(26):

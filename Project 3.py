@@ -153,8 +153,8 @@ def caesarCipher():
 # Caesars cipher but it divides the message into multiple pieces
 # and moves the pieces around.
 def caesarSliced():
-    text = input('Enter a message to be ciphered.\n').lower()
-    shift = int(input('How many positions do you want to shift?\n'))
+    text = input('\nEnter a message to be ciphered.\n').lower()
+    shift = int(input('\nHow many positions do you want to shift?\n'))
     encryptedText = ''
     decryptedText = ''
 
@@ -197,7 +197,7 @@ def caesarSliced():
     print(encryptedText)
 
     # Decryption
-    input('Press ENTER to decrypt.')
+    input('\nPress ENTER to decrypt.\n')
     encryptedText = switcharoo(encryptedText)
     for x in encryptedText:
         if not x == ' ':

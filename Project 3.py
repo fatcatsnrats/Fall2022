@@ -34,12 +34,12 @@ def vigenereCipher():
     def main():
         encryptedText = ''
         decryptedText = ''
-        key = ' '
-        text = 'abcdefg'
-        # text = input('Enter what you want to cipher.\n')
-        #  input('Enter a keyword (no spaces).\n')
-        while ' ' in key:
-            key = keyLength(text, 'no')
+        # key = ' '
+        # text = 'abcdefg'
+        text = input('Enter what you want to cipher.\n')
+        key = keyLength(text, input('Enter a keyword (no spaces).\n'))
+        # while ' ' in key:
+        #     key = keyLength(text, input('No spaces'))
         
         def encrypt(encryptedText):
             for count, x in enumerate(text):
@@ -156,6 +156,7 @@ def caesarSliced():
     encryptedText = ''
     decryptedText = ''
 
+    # This method splits 'inputText' into several pieces and re-arranges it.
     def switcharoo(inputText):
         finalText = ''
         for i in range(2, 21):
@@ -212,5 +213,5 @@ for x in range(26):
     abc.append(chr(97 + x))
 
 # caesarCipher()
-# vigenereCipher()
-caesarSliced()
+vigenereCipher()
+# caesarSliced()

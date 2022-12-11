@@ -1,5 +1,5 @@
 import random
-import linecache
+from PIL import ImageTk, Image
 import tkinter as tk
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
@@ -7,13 +7,14 @@ import tkinter.scrolledtext as st
 
 
 database = []
+dogProfile = None
 
 # This method is in charge of randomly generating all random database fields
 # except for email.
-def generator(objectType):
+def generate(objectType):
     tempInt = ''
 
-    if objectType == 'Name':
+    def name():
         dogNames = ["Buddy", "Daisy", "Max", "Charlie", "Lucy", "Molly",
             "Sadie", "Rocky", "Toby", "Coco", "Tucker", "Lady", "Bailey",
             "Zeus", "Ziggy", "Gizmo", "Maddie", "Milo", "Oscar", "Peanut",
@@ -24,46 +25,83 @@ def generator(objectType):
             "Stella", "Sadie"]
         return dogNames[random.randint(0, len(dogNames) - 1)]
 
-    elif objectType == 'Phone':
+    def photo():
+        photo = None
+        while photo is None:
+            tempInt = ''
+            for i in range(4):
+                tempInt += str(random.randint(0,9))
+
+            filePath = ((r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
+                r'\dog-cat-full-dataset\data\test\dogs\example').replace(
+                'example', ('dog.' + str(int(tempInt)) + '.jpg'
+            )))
+
+            try:
+                photo = Image.open(filePath)
+            except FileNotFoundError:
+                pass
+
+        return filePath
+
+    def phone():
         for i in range(12):
             tempInt += str(random.randint(0,9))
         return ("(" + tempInt[:3] + ")-" + tempInt[3:6] + "-" + tempInt[6:11])
 
-    elif objectType == 'Age':
-        if tempInt[1] < 4:
+    def age():
+        for i in range(2):
+            tempInt += str(random.randint(0,9))
+            
+        if int(tempInt[1]) < 4:
             return int('1' + tempInt[1])
         return (int(tempInt[0]) + 1)
 
-    elif objectType == 'Breed':
+    def breed():
         dogBreeds = ["Beagle", "Boxer", "Bulldog", "Chihuahua",
             "Cocker Spaniel", "Dachshund", "Dalmatian",
             "Golden Retriever", "Great Dane", "Greyhound",
             "Husky", "Labrador Retriever", "Poodle", "Pug",
             "Rottweiler", "Shar-Pei", "Shetland Sheepdog", "Shih Tzu",
             "Yorkshire Terrier"]
-        return dogBreeds[int(random.random(0, len(dogBreeds) - 1))]
+        return dogBreeds[int(random.randint(0, len(dogBreeds) - 1))]
 
-    elif objectType == 'Favorite Activities':
+    def favoriteActivities():
         favorite = []
         activities = ["Fetching balls", "Swimming", "Chewing bones",
             "Playing tug-of-war", "Sunbathing", "Jogging", "Jumping",
             "Chasing rabbits", "Napping", "Playing frisbee"]
         for x in range(3):
-            favorite.append(activities[int(tempInt[x])])
+            newEntry = activities[random.randint(0,9)]
+            if newEntry in favorite:
+                x -= 1
+            else:
+                favorite.append(newEntry)
+            
         return favorite
 
-# This method creates 'i' amount of random entries and appends it to database.
-# This method also concoctates the entries' email from the first and last
-# name, both of which are generated using the generator() method.
-def create(i):
-    addition = []
-    for x in range (i):
-        tempDict = {'Name': generator('Name'), 'Phone': generator('Phone'),
-            'Age': generator('Age'), 'Breed': generator('Breed'),
-            'Favorite Activities': generator('Favorite Activities')}
-        addition.append(tempDict)
-        database.append(tempDict)
-    return addition
+    tempDict = {'Name': name(), 'Phone': phone, 'Age': age,
+        'Breed': breed, 'Favorite Activities': favoriteActivities()}
+    tempDict['Photo'] = photo()
+
+    return tempDict
+    
+
+# # This method creates 'i' amount of random entries and appends it to database.
+# # This method also concoctates the entries' email from the first and last
+# # name, both of which are generated using the generator() method.
+# def create(i):
+#     addition = []
+#     for x in range (i):
+#         tempDict = {'Name': generator('Name'), 'Photo' : generator('Photo'),
+#             'Phone': generator('Phone'), 'Age': generator('Age'),
+#             'Breed': generator('Breed'),
+#             'Favorite Activities': generator('Favorite Activities')}
+#         addition.append(tempDict)
+#         database.append(tempDict)
+#     return addition
+
+# create(5)
 
 # This method checks to see if any forbidden characters were passed,
 # If there isn't any, the method returns the string that was passed to it.
@@ -78,12 +116,10 @@ def checkForbidden(userInput):
 
 # This method acts as a query. It makes a new list of all results
 # and returns it.
-def databaseQuery(queryType, query):
-    queryList = []
+def databaseQuery(query):
     for x in range(len(database)):
-        if query.lower() in str(database[x][queryType]).lower():
-            queryList.append(database[x])
-    return queryList
+        if query.lower() in str(database[x]['Favorite Activities']).lower():
+            yield database[x]
 
 
 # This class acts as the controller and allows switching between frames.
@@ -93,10 +129,10 @@ class DataBaseApp(tk.Tk):
         windowFrame = tk.Frame(self)
         self.frames = {}
 
-        self.minsize(800,370)
-        self.maxsize(800,370)
+        self.minsize(400,720)
+        self.maxsize(400,720)
         self.config(bg='#81b38e')
-        windowFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        windowFrame.pack(fill=tk.BOTH, expand=True)
 
         for x in (Home, Messages, Likes, Profile):
             frameName = x.__name__
@@ -105,7 +141,7 @@ class DataBaseApp(tk.Tk):
             frame.config(bg='#81b38e')
 
             frame.grid(row=0, column=0, sticky=tk.NSEW)
-        self.display('UserAgreement')
+        self.display('Home')
 
     # This method is called to raise whatever frame you give it
     def display(self, frameName):
@@ -119,6 +155,28 @@ class Home(tk.Frame):
         self.controller = controller
 
         mainFrame = tk.Frame(self, bg='#81b38e')
+        mainFrame.pack()
+        buttonFrame = tk.Frame(self, bg='#81b38e')
+
+        # if dogProfile is None:
+        #     showinfo(title='Create a profile', message='You must create a profile first!', )
+        #     lambda : controller.display('Profile')
+        while True:
+            # potentialDog = databaseQuery(dogProfile['Favorite Activities'][random.randint(0,2)])
+            # photo = ImageTk.PhotoImage(Image.open(dogProfile['Photo']))
+            photo = ImageTk.PhotoImage(Image.open((r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.0.jpg')))
+            label = tk.Label(mainFrame, image= photo)
+            label.pack()
+
+
+
+
+
+
+
+
+
+
         canvasFrame1 = tk.Frame(mainFrame, bg='#81b38e')
         middleFrame = tk.Frame(mainFrame, bg='#81b38e')
         canvasFrame2 = tk.Frame(mainFrame, bg='#81b38e')
@@ -215,6 +273,14 @@ class Profile(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
+generate(10)
+
+dogProfile = generate(1)
+
+# dogProfile = create(1)
+
+# print(create(5))
 
 
 app = DataBaseApp()

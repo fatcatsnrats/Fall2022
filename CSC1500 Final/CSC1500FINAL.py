@@ -137,18 +137,21 @@ class DogTinderApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.mainFrame = tk.Frame(self, bg='#81b38e', height=670)
         self.buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
+        self.dogProfile = {}
 
         self.minsize(400,720)
         self.maxsize(400,720)
         self.config(bg='#81b38e')
         self.mainFrame.pack(fill=tk.BOTH, expand=True)
-        self.button = tk.Button(self.mainFrame, command= lambda: goToMain())
+        userNameLabel = tk.Label(self.mainFrame, text='Username: ')
+        userNameEntry = tk.Entry(self.mainFrame, )
+        self.button = tk.Button(self.mainFrame, command= lambda: goToMain(), text='Login')
         self.buttonFrame.pack()
         self.button.pack()
 
         def goToMain():
             self.button.destroy()
-            self.main()
+            self.signUp()
 
     def main(self, index=0):
         potentialDog = []
@@ -159,28 +162,33 @@ class DogTinderApp(tk.Tk):
 
         # if dogProfile is None:
         #     showinfo(title='Create a profile', message='You must create a profile first!', )
-        #     lambda : controller.display('Profile')
+        #     self.profile()
 
-        tempDict = dogProfile['Favorite Activities']
-        minDogAge = dogProfile['Minumum Age']
-        maxDogAge = dogProfile['Maximum Age']
+        def findMatches():
+            tempDict = self.dogProfile['Favorite Activities']
+            minDogAge = self.dogProfile['Minimum Age']
+            maxDogAge = self.dogProfile['Maximum Age']
 
-        for i in range(3):
-            for j in databaseQuery(tempDict[i]):
-                dogAge = database[j]['Age']
-                if (not ((dogAge >= maxDogAge) or (dogAge <= minDogAge))):
-                    potentialDog.append(j)
+            for i in range(3):
+                for j in databaseQuery(tempDict[i]):
+                    dogAge = database[j]['Age']
+                    if (not ((dogAge >= maxDogAge) or (dogAge <= minDogAge))):
+                        potentialDog.append(j)
+            return list(set(potentialDog))
 
         # gets rid of duplicates
-        potentialDog = list(set(potentialDog))
+        potentialDog = findMatches()
 
         print(potentialDog)
-        dog = database[potentialDog[index]]
-        print(dog['Photo'])
-        self.im = Image.open(dog['Photo'])
-        self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
-        self.dogImage = tk.Label(self.mainFrame, image=self.photo)
-        self.dogImage.pack(pady=5)
+        try:
+            dog = database[potentialDog[index]]
+            print(dog['Photo'])
+            self.im = Image.open(dog['Photo'])
+            self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
+            self.dogImage = tk.Label(self.mainFrame, image=self.photo)
+            self.dogImage.pack(pady=5)
+        except IndexError:
+            showinfo(title='Sorry', message='No current matches :(')
 
         interactFrame = tk.Frame(self.mainFrame, bg='#81b38e')
         interactFrame.pack()
@@ -210,8 +218,8 @@ class DogTinderApp(tk.Tk):
 
 
         mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Home', height=3, width=10)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Messages', height=3, width=10)
-        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Likes', height=3, width=10)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=10)
+        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: likesFrame(), text='Likes', height=3, width=10)
         profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=10)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
@@ -236,8 +244,7 @@ class DogTinderApp(tk.Tk):
                     message="Buy 'Tinder for Dogs' Gold for more swipes!")
                 self.profile()
 
-
-        def messagesFrame():
+        def destroyAll():
             like.destroy()
             dislike.destroy()
             interactFrame.destroy()
@@ -248,32 +255,16 @@ class DogTinderApp(tk.Tk):
             likesButton.destroy()
             profileButton.destroy()
 
+        def messagesFrame():
+            destroyAll()
             self.messages()    
 
         def likesFrame():
-            like.destroy()
-            dislike.destroy()
-            interactFrame.destroy()
-            descFrame.destroy()
-            self.dogImage.destroy()
-            mainButton.destroy()
-            messagesButton.destroy()
-            likesButton.destroy()
-            profileButton.destroy()
-
+            destroyAll()
             self.likes()    
 
         def profileFrame():
-            like.destroy()
-            dislike.destroy()
-            interactFrame.destroy()
-            descFrame.destroy()
-            self.dogImage.destroy()
-            mainButton.destroy()
-            messagesButton.destroy()
-            likesButton.destroy()
-            profileButton.destroy()
-
+            destroyAll()
             self.profile()    
 
 
@@ -285,9 +276,143 @@ class DogTinderApp(tk.Tk):
         label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
         label.pack()
 
-    def profile(self):
-        label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
+    def signUp(self):
+        label = tk.Label(self.mainFrame, text='Sign Up!',font=16, bg='#81b38e')
         label.pack()
+        profileFrame = tk.Frame(self.mainFrame, bg='#81b38e', width=380)
+        profileFrame.pack()
+
+        nameLabel = tk.Label(profileFrame, text="Name:", bg='#81b38e')
+        ageLabel = tk.Label(profileFrame, text="Age:", bg='#81b38e')
+        minAgeLabel = tk.Label(profileFrame, text="Minimum Age:", bg='#81b38e')
+        maxAgeLabel = tk.Label(profileFrame, text="Maximum Age:", bg='#81b38e')
+        genderLabel = tk.Label(profileFrame, text="Gender:", bg='#81b38e')
+        phoneLabel = tk.Label(profileFrame, text="Phone Number:", bg='#81b38e')
+        activitiesLabel = tk.Label(profileFrame, text="Favorite Activities:", bg='#81b38e')
+        breedLabel = tk.Label(profileFrame, text='Breed:', bg='#81b38e')
+        photoLabel = tk.Label(profileFrame, text='Photo:', bg='#81b38e')
+        emailLabel = tk.Label(profileFrame, text='Email:', bg='#81b38e')
+
+        # create text fields for each field
+        nameField = tk.Entry(profileFrame)
+        ageField = tk.Entry(profileFrame)
+        minAgeField = tk.Entry(profileFrame)
+        maxAgeField = tk.Entry(profileFrame)
+        genderField = tk.Entry(profileFrame)
+        phoneField = tk.Entry(profileFrame)
+        activitiesField = tk.Text(profileFrame, height=3, width=15)
+        breedField = tk.Entry(profileFrame)
+        photoButton = tk.Button(profileFrame, text='Upload Photo', command=lambda: importImage())
+        emailField = tk.Entry(profileFrame)
+
+        submit = tk.Button(profileFrame, text='Sign up', command=lambda: submitProfile())
+
+        # use the grid layout manager to arrange the widgets
+        nameLabel.grid(row=0, column=0)
+        nameField.grid(row=0, column=1)
+        ageLabel.grid(row=1, column=0)
+        ageField.grid(row=1, column=1)
+        minAgeLabel.grid(row=2, column=0)
+        minAgeField.grid(row=2, column=1)
+        maxAgeLabel.grid(row=3, column=0)
+        maxAgeField.grid(row=3, column=1)
+        genderLabel.grid(row=4, column=0)
+        genderField.grid(row=4, column=1)
+        phoneLabel.grid(row=5, column=0)
+        phoneField.grid(row=5, column=1)
+        activitiesLabel.grid(row=6, column=0)
+        activitiesField.grid(row=6, column=1)
+        breedLabel.grid(row=7, column=0)
+        breedField.grid(row=7, column=1)
+        emailLabel.grid(row=8, column=0)
+        emailField.grid(row=8, column=1)
+        photoLabel.grid(row=9, column=0)
+        photoButton.grid(row=9, column=1)
+        submit.grid(row=10, column=1)
+
+        def importImage():
+            try:
+                self.dogProfile['Photo'] = fd.askopenfilename(title='Import a file', initialdir='/')
+                print(self.dogProfile['Photo'])
+                showinfo(title='Image upload', message='Image upload successful!')
+            except:
+                showinfo(title='Image upload', message='Image upload unsuccessful')
+
+        def submitProfile():
+            self.dogProfile['Name'] = nameField.get()
+            self.dogProfile['Age'] = ageField.get()
+            self.dogProfile['Gender'] = genderField.get()
+            self.dogProfile['Breed'] = breedField.get()
+            self.dogProfile['Minimum Age'] = int(minAgeField.get())
+            self.dogProfile['Maximum Age'] = int(maxAgeField.get())
+            self.dogProfile['Phone Number'] = phoneField.get()
+            self.dogProfile['Favorite Activities'] = list((activitiesField.get("1.0", "end-1c")).split('\n'))
+            print(self.dogProfile)
+            label.destroy()
+            profileFrame.destroy()
+            self.main()
+
+    def profile(self):
+        try:
+            self.im = Image.open(self.dogProfile['Photo'])
+            self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
+            self.dogImage = tk.Label(self.mainFrame, image=self.photo)
+            self.dogImage.pack(pady=5)
+        except IndexError:
+            showinfo(title='Sorry', message='No current matches :(')
+
+        interactFrame = tk.Frame(self.mainFrame, bg='#81b38e')
+        interactFrame.pack()
+        name = tk.Label(interactFrame, bg='#81b38e', text=self.dogProfile['Name'], font=12)
+        age = tk.Label(interactFrame, bg='#81b38e', text=self.dogProfile['Age'])
+        gender = tk.Label(interactFrame, bg='#81b38e', text=self.dogProfile['Gender'])
+        name.pack(padx=40)
+        gender.pack(padx=40)
+        age.pack(padx=40)
+
+        descFrame = tk.Frame(self.mainFrame, bg='#81b38e')
+        descFrame.pack(pady=20)
+        introLabel = tk.Label(descFrame, text='Description: ',
+            bg='#81b38e', font=('calibre', 16))
+        breedLabel = tk.Label(descFrame, text=('Breed: ' + self.dogProfile['Breed']),
+            bg='#81b38e', font=('calibre', 10))
+        activitiesLabel = tk.Label(descFrame, text=('Favorite Activities: ' +
+            ', '.join(self.dogProfile['Favorite Activities'])), bg='#81b38e',
+            font=('calibre', 10))
+        introLabel.grid(sticky=tk.W, pady=10)
+        breedLabel.grid(row=1, sticky=tk.W)
+        activitiesLabel.grid(row=2, sticky=tk.W)
+
+
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=10)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=10)
+        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: likesFrame(), text='Likes', height=3, width=10)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', text='Profile', height=3, width=10)
+        mainButton.grid()
+        messagesButton.grid(column=1, row=0)
+        likesButton.grid(column=2, row=0)
+        profileButton.grid(column=3, row=0)     
+
+        def destroyAll():
+            interactFrame.destroy()
+            descFrame.destroy()
+            self.dogImage.destroy()
+            mainButton.destroy()
+            messagesButton.destroy()
+            likesButton.destroy()
+            profileButton.destroy()
+
+        def messagesFrame():
+            destroyAll()
+            self.messages()
+
+        def likesFrame():
+            destroyAll()
+            self.likes()
+
+        def homeFrame():
+            destroyAll()
+            self.main()
 
 
         # canvasFrame1 = tk.Frame(mainFrame, bg='#81b38e')
@@ -358,11 +483,11 @@ class DogTinderApp(tk.Tk):
 for x in range(50):
     print(generate())
 
-dogProfile = {}
-dogProfile['Photo'] = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.0.jpg'
-dogProfile["Favorite Activities"] = ['Swimming', 'Jumping', 'Napping']
-dogProfile['Maximum Age'] = 12
-dogProfile['Minumum Age'] = 7
+# dogProfile = {}
+# dogProfile['Photo'] = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.0.jpg'
+# dogProfile["Favorite Activities"] = ['Swimming', 'Jumping', 'Napping']
+# dogProfile['Maximum Age'] = 12
+# dogProfile['Minumum Age'] = 7
 
 # dogProfile = create(1)
 

@@ -1,3 +1,4 @@
+import os
 import random
 from PIL import ImageTk, Image
 import tkinter as tk
@@ -11,8 +12,7 @@ dogProfile = None
 
 # This method is in charge of randomly generating all random database fields
 # except for email.
-def generate(objectType):
-    tempInt = ''
+def generate():
 
     def name():
         dogNames = ["Buddy", "Daisy", "Max", "Charlie", "Lucy", "Molly",
@@ -24,6 +24,9 @@ def generate(objectType):
             "Peanut", "Oliver", "Max", "Sammy", "Rocky", "Toby", "Tucker",
             "Stella", "Sadie"]
         return dogNames[random.randint(0, len(dogNames) - 1)]
+
+    def gender():
+        return random.choices(['Male', 'Female', 'Other'])
 
     def photo():
         photo = None
@@ -45,11 +48,13 @@ def generate(objectType):
         return filePath
 
     def phone():
+        tempInt = ''
         for i in range(12):
             tempInt += str(random.randint(0,9))
         return ("(" + tempInt[:3] + ")-" + tempInt[3:6] + "-" + tempInt[6:11])
 
     def age():
+        tempInt = ''
         for i in range(2):
             tempInt += str(random.randint(0,9))
             
@@ -77,11 +82,11 @@ def generate(objectType):
                 x -= 1
             else:
                 favorite.append(newEntry)
-            
         return favorite
 
-    tempDict = {'Name': name(), 'Phone': phone, 'Age': age,
-        'Breed': breed, 'Favorite Activities': favoriteActivities()}
+    tempDict = {'Name': name(), 'Phone': phone(), 'Age': age(),
+        'Gender' : gender(), 'Breed': breed(),
+        'Favorite Activities': favoriteActivities()}
     tempDict['Photo'] = photo()
 
     database.append(tempDict)
@@ -120,7 +125,7 @@ def checkForbidden(userInput):
 def databaseQuery(query):
     results = []
     for x in range(len(database)):
-        if query.lower() in str(database[x]['Favorite Activities']).lower():
+        if query in (database[x]['Favorite Activities']):
             results.append(x)
     print(results)
     return results
@@ -130,59 +135,159 @@ def databaseQuery(query):
 class DogTinderApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        windowFrame = tk.Frame(self)
-        self.frames = {}
+        self.mainFrame = tk.Frame(self, bg='#81b38e', height=670)
+        self.buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
 
         self.minsize(400,720)
         self.maxsize(400,720)
         self.config(bg='#81b38e')
-        windowFrame.pack(fill=tk.BOTH, expand=True)
+        self.mainFrame.pack(fill=tk.BOTH, expand=True)
+        self.button = tk.Button(self.mainFrame, command= lambda: goToMain())
+        self.buttonFrame.pack()
+        self.button.pack()
 
-        for x in (Home, Messages, Likes, Profile):
-            frameName = x.__name__
-            frame = x(parent=windowFrame, controller=self)
-            self.frames[frameName] = frame
-            frame.config(bg='#81b38e')
+        def goToMain():
+            self.button.destroy()
+            self.main()
 
-            frame.grid(row=0, column=0, sticky=tk.NSEW)
-        self.display('Home')
-
-    # This method is called to raise whatever frame you give it
-    def display(self, frameName):
-        frame = self.frames[frameName]
-        frame.tkraise()
-
-
-
-# This class controls the 'Home' frame and acts as the homepage. 
-class Home(tk.Frame):
-    def __init__(self, parent, controller, **photo):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self.main()
-
-    def main(self):
-        mainFrame = tk.Frame(self, bg='#81b38e', height=670)
-        buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
-        mainFrame.pack()
-        buttonFrame.pack()
+    def main(self, index=0):
+        potentialDog = []
+        # mainFrame = tk.Frame(self, bg='#81b38e', height=670)
+        # buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
+        # mainFrame.pack()
+        # buttonFrame.pack()
 
         # if dogProfile is None:
         #     showinfo(title='Create a profile', message='You must create a profile first!', )
         #     lambda : controller.display('Profile')
 
         tempDict = dogProfile['Favorite Activities']
-        potentialDog = databaseQuery(tempDict[random.randint(0,2)])
+        minDogAge = dogProfile['Minumum Age']
+        maxDogAge = dogProfile['Maximum Age']
+
+        for i in range(3):
+            for j in databaseQuery(tempDict[i]):
+                dogAge = database[j]['Age']
+                if (not ((dogAge >= maxDogAge) or (dogAge <= minDogAge))):
+                    potentialDog.append(j)
+
+        # gets rid of duplicates
+        potentialDog = list(set(potentialDog))
+
         print(potentialDog)
-        for count, x in enumerate(potentialDog):
-            dog = database[x]
-            photo = ImageTk.PhotoImage(dog['Photo'])
-            label = tk.Label(self, image=photo)
-            label.pack()
+        dog = database[potentialDog[index]]
+        print(dog['Photo'])
+        self.im = Image.open(dog['Photo'])
+        self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
+        self.dogImage = tk.Label(self.mainFrame, image=self.photo)
+        self.dogImage.pack(pady=5)
+
+        interactFrame = tk.Frame(self.mainFrame, bg='#81b38e')
+        interactFrame.pack()
+        like = tk.Button(interactFrame, text='Like', command=lambda: nextDog())
+        dislike = tk.Button(interactFrame, text='Dislike', command=lambda: nextDog())
+        name = tk.Label(interactFrame, bg='#81b38e', text=dog['Name'], font=12)
+        age = tk.Label(interactFrame, bg='#81b38e', text=dog['Age'])
+        gender = tk.Label(interactFrame, bg='#81b38e', text=dog['Gender'])
+        like.pack(side=tk.RIGHT, padx=20)
+        dislike.pack(side=tk.LEFT)
+        name.pack(padx=40)
+        gender.pack(padx=40)
+        age.pack(padx=40)
+
+        descFrame = tk.Frame(self.mainFrame, bg='#81b38e')
+        descFrame.pack(pady=20)
+        introLabel = tk.Label(descFrame, text=('More about ' + dog['Name']),
+            bg='#81b38e', font=('calibre', 16))
+        breedLabel = tk.Label(descFrame, text=('Breed: ' + dog['Breed']),
+            bg='#81b38e', font=('calibre', 10))
+        activitiesLabel = tk.Label(descFrame, text=('Favorite Activities: ' +
+            ', '.join(dog['Favorite Activities'])), bg='#81b38e',
+            font=('calibre', 10))
+        introLabel.grid(sticky=tk.W, pady=10)
+        breedLabel.grid(row=1, sticky=tk.W)
+        activitiesLabel.grid(row=2, sticky=tk.W)
 
 
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Home', height=3, width=10)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Messages', height=3, width=10)
+        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Likes', height=3, width=10)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=10)
+        mainButton.grid()
+        messagesButton.grid(column=1, row=0)
+        likesButton.grid(column=2, row=0)
+        profileButton.grid(column=3, row=0)     
+
+        def nextDog():
+            like.destroy()
+            dislike.destroy()
+            interactFrame.destroy()
+            descFrame.destroy()
+            self.dogImage.destroy()
+            mainButton.destroy()
+            messagesButton.destroy()
+            likesButton.destroy()
+            profileButton.destroy()
+
+            if ((index + 1) < 20) and (len(potentialDog) > (index + 1)):
+                self.main(index + 1)
+            else:
+                showinfo(title='You ran out of swipes!',
+                    message="Buy 'Tinder for Dogs' Gold for more swipes!")
+                self.profile()
 
 
+        def messagesFrame():
+            like.destroy()
+            dislike.destroy()
+            interactFrame.destroy()
+            descFrame.destroy()
+            self.dogImage.destroy()
+            mainButton.destroy()
+            messagesButton.destroy()
+            likesButton.destroy()
+            profileButton.destroy()
+
+            self.messages()    
+
+        def likesFrame():
+            like.destroy()
+            dislike.destroy()
+            interactFrame.destroy()
+            descFrame.destroy()
+            self.dogImage.destroy()
+            mainButton.destroy()
+            messagesButton.destroy()
+            likesButton.destroy()
+            profileButton.destroy()
+
+            self.likes()    
+
+        def profileFrame():
+            like.destroy()
+            dislike.destroy()
+            interactFrame.destroy()
+            descFrame.destroy()
+            self.dogImage.destroy()
+            mainButton.destroy()
+            messagesButton.destroy()
+            likesButton.destroy()
+            profileButton.destroy()
+
+            self.profile()    
+
+
+    def messages(self):
+        label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
+        label.pack()
+
+    def likes(self):
+        label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
+        label.pack()
+
+    def profile(self):
+        label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
+        label.pack()
 
 
         # canvasFrame1 = tk.Frame(mainFrame, bg='#81b38e')
@@ -250,47 +355,14 @@ class Home(tk.Frame):
         # canvas1.pack(padx=20)
         # canvas2.pack(padx=20)
 
-
-# This class controls the 'Messages' frame and acts as the homepage. 
-class Messages(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        mainFrame = tk.Frame(self, bg='#81b38e', height=670)
-        buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
-
-        mainFrame.pack()
-        buttonFrame.pack()
-
-
-
-
-
-# This class controls the 'Likes' frame and acts as the homepage. 
-class Likes(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-
-
-
-
-
-
-
-# This class controls the 'Profile' frame and acts as the homepage. 
-class Profile(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-generate(60)
+for x in range(50):
+    print(generate())
 
 dogProfile = {}
 dogProfile['Photo'] = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.0.jpg'
 dogProfile["Favorite Activities"] = ['Swimming', 'Jumping', 'Napping']
+dogProfile['Maximum Age'] = 12
+dogProfile['Minumum Age'] = 7
 
 # dogProfile = create(1)
 

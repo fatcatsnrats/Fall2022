@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 import tkinter as tk
 from tkinter import filedialog as fd
 from tkinter import ttk
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, askyesnocancel
 import tkinter.scrolledtext as st
 
 
@@ -179,6 +179,7 @@ class DogTinderApp(tk.Tk):
         ldFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt'
         pdFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\potential.txt'
         iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
+        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
 
         try:
             with open(ldFile, 'rb') as liked:
@@ -198,21 +199,27 @@ class DogTinderApp(tk.Tk):
         except:
             self.index = 0
 
+        try:
+            with open(message, 'rb') as messaging:
+                self.messagesList = int(pickle.load(messaging))
+        except:
+            self.messagesList = 0
+
         self.minsize(400,720)
         self.maxsize(400,720)
         self.config(bg='#81b38e')
         self.mainFrame.pack(fill=tk.BOTH, expand=True)
         emailPasswordFrame = tk.Frame(self.mainFrame, bg='#81b38e')
-        userNameLabel = tk.Label(emailPasswordFrame, text='Username: ')
+        userNameLabel = tk.Label(emailPasswordFrame, text='Username: ', bg='#81b38e')
         userNameEntry = tk.Entry(emailPasswordFrame)
         emailPasswordFrame.pack()
         login = tk.Button(self.mainFrame, command= lambda: goToMain(), text='Login')
         signUp = tk.Button(self.mainFrame, command= lambda: goToSignUp(), text='Sign Up')
         self.buttonFrame.pack()
-        userNameLabel.grid()
-        userNameEntry.grid(row=1, column=0)
-        login.pack()
-        signUp.pack(pady=40)
+        userNameLabel.grid(pady=15)
+        userNameEntry.grid(row=1, column=0, pady=5)
+        login.pack(pady=15)
+        signUp.pack(pady=10)
 
         def goToSignUp():
             login.destroy()
@@ -303,28 +310,32 @@ class DogTinderApp(tk.Tk):
         activitiesLabel.grid(row=2, sticky=tk.W)
 
 
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Home', height=3, width=10)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=10)
-        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: likesFrame(), text='Likes', height=3, width=10)
-        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=10)
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Home', height=3, width=14)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=14)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
-        likesButton.grid(column=2, row=0)
         profileButton.grid(column=3, row=0)     
 
         def nextDog():
             destroyAll()
-            if ((self.index + 1) < 20) and (len(self.potentialDog) > (self.index + 1)):
+            if (len(self.potentialDog) > (self.index + 1)):
                 self.index += 1
                 self.store()
                 self.main()
             else:
-                showinfo(title='You ran out of swipes!',
+                reply = askyesnocancel(title='You ran out of swipes!',
                     message="Buy 'Tinder for Dogs' Gold for more swipes!")
-                self.profile()
+                if reply:
+                    generate(100)
+                    saveData()
+                    self.store()
+                    self.main()
+                else:
+                    self.profile()
 
         def likeDog(index):
-            self.likedDogs.append(database[index])
+            self.likedDogs.append(self.potentialDog[index])
             nextDog()
 
         def destroyAll():
@@ -336,16 +347,11 @@ class DogTinderApp(tk.Tk):
             self.dogImage.destroy()
             mainButton.destroy()
             messagesButton.destroy()
-            likesButton.destroy()
             profileButton.destroy()
 
         def messagesFrame():
             destroyAll()
             self.messages()    
-
-        def likesFrame():
-            destroyAll()
-            self.likes()    
 
         def profileFrame():
             destroyAll()
@@ -357,16 +363,65 @@ class DogTinderApp(tk.Tk):
         # label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
         # label.pack()
 
-        newDogsFrame = tk.Frame(self.mainFrame, width=380, height=150, bg='#81b38e')
-        currentMessages = tk.Frame(self.mainFrame, width=380, height=570, bg='#81b38e')
+        newDogsFrame = tk.Frame(self.mainFrame, width=360, height=250, bg='#81b38e')
+        currentMessages = tk.Frame(self.mainFrame, width=380, height=470, bg='#81b38e')
         newDogsFrame.pack()
         currentMessages.pack()
 
-        newDog1 = tk.
+        if self.likedDogs:
+            self.im1 = Image.open(self.likedDogs[0]['Photo'])
+            self.photo1 = ImageTk.PhotoImage(self.im1.resize((85, 65)))
+            self.dogImage1 = tk.Label(newDogsFrame, image=self.photo1)
+            self.dogImage1.grid()
+
+            self.im2 = Image.open(self.likedDogs[1]['Photo'])
+            self.photo2 = ImageTk.PhotoImage(self.im2.resize((85, 65)))
+            self.dogImage2 = tk.Label(newDogsFrame, image=self.photo2)
+            self.dogImage2.grid(column=1, row=0)
+
+            self.im3 = Image.open(self.likedDogs[2]['Photo'])
+            self.photo3 = ImageTk.PhotoImage(self.im3.resize((85, 65)))
+            self.dogImage3 = tk.Label(newDogsFrame, image=self.photo3)
+            self.dogImage3.grid(column=2, row=0)
+
+            self.im4 = Image.open(self.likedDogs[3]['Photo'])
+            self.photo4 = ImageTk.PhotoImage(self.im4.resize((85, 65)))
+            self.dogImage4 = tk.Label(newDogsFrame, image=self.photo4)
+            self.dogImage4.grid(column=3, row=0)
+
+            self.im5 = Image.open(self.likedDogs[4]['Photo'])
+            self.photo5 = ImageTk.PhotoImage(self.im5.resize((85, 65)))
+            self.dogImage5 = tk.Label(newDogsFrame, image=self.photo5)
+            self.dogImage5.grid(column=0, row=1)
+
+            self.im6 = Image.open(self.likedDogs[5]['Photo'])
+            self.photo6 = ImageTk.PhotoImage(self.im6.resize((85, 65)))
+            self.dogImage6 = tk.Label(newDogsFrame, image=self.photo6)
+            self.dogImage6.grid(column=1, row=1)
+
+            self.im7 = Image.open(self.likedDogs[6]['Photo'])
+            self.photo7 = ImageTk.PhotoImage(self.im7.resize((85, 65)))
+            self.dogImage7 = tk.Label(newDogsFrame, image=self.photo7)
+            self.dogImage7.grid(column=2, row=1)
+
+            self.im8 = Image.open(self.likedDogs[7]['Photo'])
+            self.photo8 = ImageTk.PhotoImage(self.im8.resize((85, 65)))
+            self.dogImage8 = tk.Label(newDogsFrame, image=self.photo8)
+            self.dogImage8.grid(column=3, row=1)
+
+        else:
+            noLikes = tk.Label(newDogsFrame, text='You dont have any matches yet!', bg='#81b38e')
+            noLikes.pack(pady=30)
+
+        label = tk.Label(currentMessages,
+            text='You have no current conversations', font=16, bg='#81b38e')
+        label.pack(pady=50)
+        
 
 
 
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=1)
+
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=14)
         messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
         profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=14)
         mainButton.grid()
@@ -375,7 +430,8 @@ class DogTinderApp(tk.Tk):
 
         def destroyAll():
             self.store()
-            # label.destroy()
+            newDogsFrame.destroy()
+            currentMessages.destroy()
             mainButton.destroy()
             messagesButton.destroy()
             profileButton.destroy()
@@ -589,13 +645,11 @@ class DogTinderApp(tk.Tk):
 
 
 
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=10)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=10)
-        likesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: likesFrame(), text='Likes', height=3, width=10)
-        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', text='Profile', height=3, width=10)
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=14)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', text='Profile', height=3, width=14)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
-        likesButton.grid(column=2, row=0)
         profileButton.grid(column=3, row=0)     
 
         def destroyAll():
@@ -604,16 +658,11 @@ class DogTinderApp(tk.Tk):
             self.dogImage.destroy()
             mainButton.destroy()
             messagesButton.destroy()
-            likesButton.destroy()
             profileButton.destroy()
 
         def messagesFrame():
             destroyAll()
             self.messages()
-
-        def likesFrame():
-            destroyAll()
-            self.likes()
 
         def homeFrame():
             destroyAll()
@@ -628,6 +677,7 @@ class DogTinderApp(tk.Tk):
         pdFile = (r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
             + r'\potential.txt')
         iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
+        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
 
         with open(ldFile, 'rb') as liked:
             self.likedDogs = list(pickle.load(liked))
@@ -635,12 +685,15 @@ class DogTinderApp(tk.Tk):
             self.potentialDog = list(pickle.load(potential))
         with open(iFile, 'rb') as liked:
             self.index = int(pickle.load(liked))
+        with open(message, 'rb') as messaging:
+            self.messagesList = int(pickle.load(messaging))
 
     def store(self):
         ldFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt'
         pdFile = (r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
             + r'\potential.txt')
         iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
+        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
 
         with open(ldFile, 'wb') as liked:
             pickle.dump(self.likedDogs, liked)
@@ -648,6 +701,8 @@ class DogTinderApp(tk.Tk):
             pickle.dump(self.potentialDog, potential)
         with open(iFile, 'wb') as liked:
             pickle.dump(self.index, liked)
+        with open(message, 'wb') as messaging:
+            pickle.dump(self.messagesList, messaging)
 
 
 

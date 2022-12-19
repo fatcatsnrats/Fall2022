@@ -154,7 +154,6 @@ def databaseQuery(query):
     for x in range(len(database)):
         if query in (database[x]['Favorite Activities']):
             results.append(x)
-    print(results)
     return results
 
 def loginDatabase(email):
@@ -253,16 +252,10 @@ class DogTinderApp(tk.Tk):
 
     def main(self):
         self.refresh()
-        # mainFrame = tk.Frame(self, bg='#81b38e', height=670)
-        # buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
-        # mainFrame.pack()
-        # buttonFrame.pack()
 
-        # if dogProfile is None:
-        #     showinfo(title='Create a profile', message='You must create a profile first!', )
-        #     self.profile()
-
-        def findMatches():
+        # If potentialDog is empty, it has been not imported and
+        # needs to be generated.
+        if not self.potentialDog:
             try:
                 tempDict = self.dogProfile['Favorite Activities']
                 minDogAge = self.dogProfile['Minimum Age']
@@ -279,18 +272,13 @@ class DogTinderApp(tk.Tk):
                         if (((dogAge <= maxDogAge) and (dogAge >= minDogAge))
                             and (dogGender in prefGender)):
                             self.potentialDog.append(j)
-                return list(set(self.potentialDog))
+                self.potentialDog = list(set(self.potentialDog))
             else:
                 showinfo(title='Incomplete Profile',
                     message='Enter your Favorite Activities to find matches!')
                 self.profile()
 
-
-        # gets rid of duplicates
-        self.potentialDog = findMatches()
-
         print(self.potentialDog)
-        print(database[4])
         try:
             dog = database[self.potentialDog[self.index]]
             print(dog['Photo'])
@@ -577,13 +565,13 @@ class DogTinderApp(tk.Tk):
                 emailField.insert(0,self.dogProfile['Email'])
             except KeyError:
                 pass
-            for x in self.dogProfile['Preffered Gender(s)']:
-                if x == 'Male':
-                    male.set(1)
-                elif x == 'Female':
-                    female.set(1)
-                elif x == 'Other':
-                    other.set(1)
+            # for x in self.dogProfile['Preffered Gender(s)']:
+            #     if x == 'Male':
+            #         male.set(1)
+            #     elif x == 'Female':
+            #         female.set(1)
+            #     elif x == 'Other':
+            #         other.set(1)
 
 
         updateValues()
@@ -618,11 +606,15 @@ class DogTinderApp(tk.Tk):
         def importImage():
             try:
                 self.dogProfile['Photo'] = fd.askopenfilename(title='Import a file', initialdir='/')
+                saveData()
+                self.store()
+                if 'update' in title.lower():
+                    database[database.index(loginDatabase(self.dogProfile['Email']))]['Photo'] = self.dogProfile['Photo']
                 im = Image.open(self.dogProfile['Photo'])
                 print(self.dogProfile['Photo'])
-                showinfo(title='Image upload', message='Image upload successful!')
+                showinfo('Image Upload', 'Image upload was successful!')
             except:
-                showinfo(title='Image upload', message='Image upload unsuccessful')
+                showinfo('Error Encountered', 'An error occured. Image upload was unsuccessful')
             
         # def prefGenders():
         #     prefGendersArr = []
@@ -714,7 +706,8 @@ class DogTinderApp(tk.Tk):
                 label.destroy()
                 profileFrame.destroy()
                 comboBoxFrame.destroy()
-                database.append(self.dogProfile)
+                if 'sign up' in title.lower():
+                    database.append(self.dogProfile)
                 saveData()
                 self.main()
 

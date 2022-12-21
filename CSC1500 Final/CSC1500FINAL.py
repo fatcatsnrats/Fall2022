@@ -13,7 +13,8 @@ dogProfile = None
 activities = ["Fetching balls", "Swimming", "Chewing bones",
     "Playing tug-of-war", "Sunbathing", "Jogging", "Jumping",
     "Chasing rabbits", "Napping", "Playing frisbee"]
-stockImage = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.8898.jpg'
+stockImage = (r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
+    + r'\dog-cat-full-dataset\data\test\dogs\dog.8898.jpg')
 
 # This method is in charge of randomly generating all random database fields
 # except for email.
@@ -49,7 +50,6 @@ def generate(index):
                 photo = Image.open(filePath)
             except FileNotFoundError:
                 pass
-
         return filePath
 
     def phone():
@@ -98,7 +98,6 @@ def generate(index):
         if x == 0:
             tempDict['Minimum Age'] = 6
             tempDict['Maximum Age'] = 12
-            print('Bingo!')
         database.append(tempDict)
     
 # This method deserializes the 'database' list.
@@ -144,19 +143,7 @@ def loginDatabase(email):
     return None
 
 
-# # #
-# # #
-# # #
-# # #
-# # #
-# # #
-# # #
-# # #
-# # #
-# # #
-
-
-# This class acts as the controller and allows switching between frames.
+# This is where the GUI is contained.
 class DogTinderApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -185,7 +172,7 @@ class DogTinderApp(tk.Tk):
         # Sign up / Login page
         emailPasswordFrame = tk.Frame(self.mainFrame, bg='#81b38e')
         userNameLabel = tk.Label(emailPasswordFrame,
-        text='Username: ', bg='#81b38e')
+        text='Email: ', bg='#81b38e')
         userNameEntry = tk.Entry(emailPasswordFrame)
         emailPasswordFrame.pack()
         login = tk.Button(self.mainFrame,
@@ -660,7 +647,8 @@ class DogTinderApp(tk.Tk):
         # If it isnt, it adds a stock photo to the user's profile
         def importImage():
             try:
-                self.dogProfile['Photo'] = fd.askopenfilename(title='Import a file', initialdir='/')
+                self.dogProfile['Photo'] = fd.askopenfilename(
+                    title='Import a file', initialdir='/')
                 saveData()
                 self.store()
                 try:
@@ -764,6 +752,10 @@ class DogTinderApp(tk.Tk):
                 label.destroy()
                 profileFrame.destroy()
                 comboBoxFrame.destroy()
+                try:
+                    im = Image.open(self.dogProfile['Photo'])
+                except KeyError or AttributeError:
+                    self.dogProfile['Photo'] = stockImage
                 if 'sign up' in title.lower():
                     database.append(self.dogProfile)
                 elif 'update' in title.lower():
@@ -880,7 +872,6 @@ class DogTinderApp(tk.Tk):
             pickle.dump(self.index, liked)
         with open(self.message, 'wb') as messaging:
             pickle.dump(self.messagesList, messaging)
-
 
 database = loadData()
 print(len(database))

@@ -16,7 +16,7 @@ except:
     cursor = database.cursor()
     cursor.execute('CREATE DATABASE library')
 
-    # Create the books table
+    # Create the books table.
     cursor = database.cursor()
     cursor.execute("""
         CREATE TABLE books (
@@ -31,6 +31,7 @@ except:
     """)
     database.commit()
 
+# Adds to the database.
 def add(title, author, isbn, copiesP, copiesN, retail):
     cursor = database.cursor()
     cursor.execute("""
@@ -39,6 +40,7 @@ def add(title, author, isbn, copiesP, copiesN, retail):
     """, (title, author, isbn, copiesP, copiesN, retail))
     database.commit()
 
+# Removes from the database.
 def remove(value, varType):
     cursor = database.cursor()
     cursor.execute("""
@@ -46,14 +48,13 @@ def remove(value, varType):
     """, (varType, value))
     database.commit()
 
+# Shows all values from the database.
 def showAll():
     cursor = database.cursor()
     cursor.execute('SELECT * FROM books')
     mycursor = cursor.fetchall()
 
-    # cursor.execute('SHOW TABLES')
     for x in mycursor:
         print(x)
 
-add('nog', 'hsd', 3256264, 235, 142, 12.34)
 showAll()

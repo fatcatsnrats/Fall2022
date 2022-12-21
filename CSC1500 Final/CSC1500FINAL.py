@@ -101,32 +101,18 @@ def generate(index):
             print('Bingo!')
         database.append(tempDict)
     
+# This method deserializes the 'database' list.
 def loadData():
-    filepath = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog_database.txt'
-    pickledData = open(filepath, "rb")
+    fp = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog_database.txt'
+    pickledData = open(fp, "rb")
     data = pickle.load(pickledData)
     return data
 
+# This method serializes the 'database' list.
 def saveData():
-    filepath = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog_database.txt'
-    with open(filepath, 'wb') as file:
+    fp = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog_database.txt'
+    with open(fp, 'wb') as file:
         pickle.dump(database, file)
-
-# # This method creates 'i' amount of random entries and appends it to database.
-# # This method also concoctates the entries' email from the first and last
-# # name, both of which are generated using the generator() method.
-# def create(i):
-#     addition = []
-#     for x in range (i):
-#         tempDict = {'Name': generator('Name'), 'Photo' : generator('Photo'),
-#             'Phone': generator('Phone'), 'Age': generator('Age'),
-#             'Breed': generator('Breed'),
-#             'Favorite Activities': generator('Favorite Activities')}
-#         addition.append(tempDict)
-#         database.append(tempDict)
-#     return addition
-
-# create(5)
 
 # This method checks to see if any forbidden characters were passed,
 # If there isn't any, the method returns the string that was passed to it.
@@ -134,14 +120,6 @@ def saveData():
 def checkForbidden(userInput):
     forbidden = ['@', '!', "#", "$", "%", "^", "&", "*", "(", ")",
         "?", "/", '"', "<", ">", '-', ':', ';', '=', '+', '`', '~', '.']
-    for x in forbidden:
-        if x in userInput:
-            userInput = 'Forbidden'
-    return userInput
-
-def checkForbiddenPhone(userInput):
-    forbidden = ['@', '!', "#", "$", "%", "^", "&", "*", "?", "/", '"',
-        "<", ">", ':', ';', '=', '+', '`', '~', '.']
     for x in forbidden:
         if x in userInput:
             userInput = 'Forbidden'
@@ -156,6 +134,8 @@ def databaseQuery(query):
             results.append(x)
     return results
 
+# This method returns the database entry that has its ['Email'] value
+# matching the 'email' string.
 def loginDatabase(email):
     database = loadData()
     for i in database:
@@ -180,31 +160,45 @@ def loginDatabase(email):
 class DogTinderApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.dogProfile = {}
         self.mainFrame = tk.Frame(self, bg='#81b38e', height=670)
         self.buttonFrame = tk.Frame(self, bg='#81b38e', height=50)
-        self.dogProfile = {}
 
-        ldFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt'
-        pdFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\potential.txt'
-        iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
-        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
+        # 'ldFile' is where likedDogs is serialized, pdFile is where
+        # 'potentialDogs' is serialized, iFile is where
+        # the 'index' is serialized, and message is where
+        # 'messagesList' is serialized.
+        self.ldFile = (
+            r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt')
+        self.pdFile = (
+            r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\potential.txt')
+        self.iFile = (
+            r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt')
+        self.message = (
+            r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt')
 
         self.minsize(400,720)
         self.maxsize(400,720)
         self.config(bg='#81b38e')
         self.mainFrame.pack(fill=tk.BOTH, expand=True)
+
+        # Sign up / Login page
         emailPasswordFrame = tk.Frame(self.mainFrame, bg='#81b38e')
-        userNameLabel = tk.Label(emailPasswordFrame, text='Username: ', bg='#81b38e')
+        userNameLabel = tk.Label(emailPasswordFrame,
+        text='Username: ', bg='#81b38e')
         userNameEntry = tk.Entry(emailPasswordFrame)
         emailPasswordFrame.pack()
-        login = tk.Button(self.mainFrame, command= lambda: goToMain(), text='Login')
-        signUp = tk.Button(self.mainFrame, command= lambda: goToSignUp(), text='Sign Up')
+        login = tk.Button(self.mainFrame,
+            command= lambda: goToMain(), text='Login')
+        signUp = tk.Button(self.mainFrame,
+            command= lambda: goToSignUp(), text='Sign Up')
         self.buttonFrame.pack()
         userNameLabel.grid(pady=15)
         userNameEntry.grid(row=1, column=0, pady=5)
         login.pack(pady=15)
         signUp.pack(pady=10)
 
+        # Creates new values for the user and calls the signUp() method.
         def goToSignUp():
             self.index = 0
             self.messagesList = []
@@ -216,27 +210,36 @@ class DogTinderApp(tk.Tk):
             emailPasswordFrame.destroy()
             self.signUp('Sign up to Dog Tinder!')
 
+        # Since the user is trying to log in, this method tries to import
+        # the user's data from their device. It then tries to find the email
+        # the user submitted and checks to see if its in the database.
         def goToMain():
             try:
-                with open(ldFile, 'rb') as liked:
+                with open(self.ldFile, 'rb') as liked:
                     self.likedDogs = list(pickle.load(liked))
             except:
                 self.likedDogs = []
             try:
-                with open(pdFile, 'rb') as potential:
+                with open(self.pdFile, 'rb') as potential:
                     self.potentialDog = list(pickle.load(potential))
             except:
                 self.potentialDog = []
             try:
-                with open(iFile, 'rb') as liked:
+                with open(self.iFile, 'rb') as liked:
                     self.index = int(pickle.load(liked))
             except:
                 self.index = 0
             try:
-                with open(message, 'rb') as messaging:
+                with open(self.message, 'rb') as messaging:
                     self.messagesList = list(pickle.load(messaging))
             except:
-                self.messagesList = 0
+                self.messagesList = []
+
+            # If the inputted email is in the database,
+            # this retrives the users profile from the database,
+            # copies it into the 'dogProfile' list, and calls main().
+            # Otherwise, it notifies the user the they inputted
+            # the wrong email.
             self.store()
             dogFile = loginDatabase(userNameEntry.get())
             print(dogFile)
@@ -248,49 +251,61 @@ class DogTinderApp(tk.Tk):
                 emailPasswordFrame.destroy()
                 self.main()
             else:
-                showinfo(title='Error', message='Incorrect Password')
+                showinfo(title='Error', message='Email not found!')
 
+    # This is where the user 'likes' and 'dislikes' other dog's profiles.
+    # Shows dogs from the 'potentialDog' list.
+    # Whenever the user likes a dog, it appends the dog
+    # to the 'likedDogs' list and calls the nextDog() method.
+    # When the user dislikes a dog, nexDog() is called.
+    # nextDog() adds 1 to the index, calls methods that save data,
+    # and loads a new dog from potentialDogs.
+    # All dogs in potentialDog have at least one
+    # matching favorite activity, are within the user's preffered
+    # age range, and have a gender that matches the users preferences.
     def main(self):
         self.refresh()
 
-        # If potentialDog is empty, it has been not imported and
-        # needs to be generated.
-        if not self.potentialDog:
+        # If potentialDog has not been imported, it is an empty list
+        # and needs to be generated.
+        if ((not self.potentialDog)
+                or (len(self.potentialDog) < (self.index + 1))):
             try:
                 tempDict = self.dogProfile['Favorite Activities']
                 minDogAge = self.dogProfile['Minimum Age']
                 maxDogAge = self.dogProfile['Maximum Age']
                 prefGender = self.dogProfile['Preffered Gender(s)']
+                if len(tempDict) > 0:
+                    for i in range(len(tempDict)):
+                        for j in databaseQuery(tempDict[i]):
+                            dogAge = database[j]['Age']
+                            dogGender = database[j]['Gender']
+                            if ((dogAge <= maxDogAge)
+                                    and (dogAge >= minDogAge)
+                                    and (dogGender in prefGender)):
+                                self.potentialDog.append(j)
+                    self.potentialDog = list(set(self.potentialDog))
             except KeyError:
-                pass
-
-            if len(tempDict) > 0:
-                for i in range(len(tempDict)):
-                    for j in databaseQuery(tempDict[i]):
-                        dogAge = database[j]['Age']
-                        dogGender = database[j]['Gender']
-                        if (((dogAge <= maxDogAge) and (dogAge >= minDogAge))
-                            and (dogGender in prefGender)):
-                            self.potentialDog.append(j)
-                self.potentialDog = list(set(self.potentialDog))
-            else:
                 showinfo(title='Incomplete Profile',
-                    message='Enter your Favorite Activities to find matches!')
-                self.profile()
+                    message='Your profile is not yet complete!')
+                self.signUp('Update Profile')
 
-        print(self.potentialDog)
+        # Displays the dogs image, the like button, the dislike button,
+        # and additional information about the dog.
         try:
             dog = database[self.potentialDog[self.index]]
-            print(dog['Photo'])
             self.im = Image.open(dog['Photo'])
             self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
             self.dogImage = tk.Label(self.mainFrame, image=self.photo)
             self.dogImage.pack(pady=5)
             interactFrame = tk.Frame(self.mainFrame, bg='#81b38e')
             interactFrame.pack()
-            like = tk.Button(interactFrame, text='Like', command=lambda: likeDog(self.index))
-            dislike = tk.Button(interactFrame, text='Dislike', command=lambda: nextDog())
-            name = tk.Label(interactFrame, bg='#81b38e', text=dog['Name'], font=12)
+            like = tk.Button(interactFrame, text='Like',
+                command=lambda: likeDog(self.index))
+            dislike = tk.Button(interactFrame, text='Dislike',
+                command=lambda: nextDog())
+            name = tk.Label(interactFrame, bg='#81b38e', text=dog['Name'],
+                font=12)
             age = tk.Label(interactFrame, bg='#81b38e', text=dog['Age'])
             gender = tk.Label(interactFrame, bg='#81b38e', text=dog['Gender'])
             like.pack(side=tk.RIGHT, padx=20)
@@ -301,12 +316,14 @@ class DogTinderApp(tk.Tk):
 
             descFrame = tk.Frame(self.mainFrame, bg='#81b38e')
             descFrame.pack(pady=20)
-            introLabel = tk.Label(descFrame, text=('More about ' + dog['Name']),
+            introLabel = tk.Label(descFrame,
+                text=('More about ' + dog['Name']),
                 bg='#81b38e', font=('calibre', 16))
             breedLabel = tk.Label(descFrame, text=('Breed: ' + dog['Breed']),
                 bg='#81b38e', font=('calibre', 10))
-            activitiesLabel = tk.Label(descFrame, text=('Favorite Activities: ' +
-                ', '.join(dog['Favorite Activities'])), bg='#81b38e',
+            activitiesLabel = tk.Label(descFrame,
+                text=('Favorite Activities: '
+                + ', '.join(dog['Favorite Activities'])), bg='#81b38e',
                 font=('calibre', 10))
             introLabel.grid(sticky=tk.W, pady=10)
             breedLabel.grid(row=1, sticky=tk.W)
@@ -314,14 +331,26 @@ class DogTinderApp(tk.Tk):
         except IndexError or TypeError:
             showinfo(title='Sorry', message='No current matches :(')
 
-
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: nextDog(), text='Home', height=3, width=14)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
-        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=14)
+        # Buttons on the bottom of the page that allow the user
+        # to switch between the main page, the messages page,
+        # and the profile page.
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            command=lambda: nextDog(), text='Home', height=3, width=14)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            command=lambda: messagesFrame(), text='Messages',
+            height=3, width=14)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            command=lambda: profileFrame(), text='Profile',
+            height=3, width=14)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
         profileButton.grid(column=3, row=0)     
 
+        # Adds 1 to the index, calls methods to store data, and calls main().
+        # Also checks to see if the user ran out of potential dogs.
+        # If the user had run out, it asks if the user wants 'buy'
+        # more 'swipes'. If the user says yes, it will create 100 new dogs
+        # in the database using the generate() method.
         def nextDog():
             destroyAll()
             if (len(self.potentialDog) > (self.index + 1)):
@@ -332,6 +361,8 @@ class DogTinderApp(tk.Tk):
                 reply = askyesnocancel(title='You ran out of swipes!',
                     message="Buy 'Tinder for Dogs' Gold for more swipes!")
                 if reply:
+                    self.potentialDog = []
+                    self.index = 0
                     generate(100)
                     saveData()
                     self.store()
@@ -339,10 +370,12 @@ class DogTinderApp(tk.Tk):
                 else:
                     self.profile()
 
+        # Adds dogs to the 'likedDogs' list.
         def likeDog(index):
             self.likedDogs.append(database[self.potentialDog[index]])
             nextDog()
 
+        # Destroys all widgets so the user can switch pages.
         def destroyAll():
             self.store()
             try:
@@ -365,79 +398,92 @@ class DogTinderApp(tk.Tk):
             destroyAll()
             self.profile()    
 
-
+    # This is where the user would be able to message users they matched with.
+    # On the top of the screen, there is a picture of eight dogs the user has
+    # liked but not yet messaged.
     def messages(self):
         self.refresh()
-        # label = tk.Label(self.mainFrame, text='Hello', bg='#81b38e')
-        # label.pack()
-
-        newDogsFrame = tk.Frame(self.mainFrame, width=360, height=250, bg='#81b38e')
-        currentMessages = tk.Frame(self.mainFrame, width=380, height=470, bg='#81b38e')
+        newDogsFrame = tk.Frame(self.mainFrame, width=360,
+            height=250, bg='#81b38e')
+        currentMessages = tk.Frame(self.mainFrame, width=380,
+            height=470, bg='#81b38e')
         newDogsFrame.pack()
         currentMessages.pack()
 
+        # Displays up to 8 dogs the user has liked but not yet messaged.
         if self.likedDogs:
+            photoList = set({})
+            for x in self.likedDogs:
+                photoList.add(x['Photo'])
+            photoList = list(photoList)
             try:
-                self.im1 = Image.open(self.likedDogs[0]['Photo'])
+                self.im1 = Image.open(photoList[0])
                 self.photo1 = ImageTk.PhotoImage(self.im1.resize((85, 65)))
                 self.dogImage1 = tk.Label(newDogsFrame, image=self.photo1)
                 self.dogImage1.grid()
 
-                self.im2 = Image.open(self.likedDogs[1]['Photo'])
+                self.im2 = Image.open(photoList[1])
                 self.photo2 = ImageTk.PhotoImage(self.im2.resize((85, 65)))
                 self.dogImage2 = tk.Label(newDogsFrame, image=self.photo2)
                 self.dogImage2.grid(column=1, row=0)
 
-                self.im3 = Image.open(self.likedDogs[2]['Photo'])
+                self.im3 = Image.open(photoList[2])
                 self.photo3 = ImageTk.PhotoImage(self.im3.resize((85, 65)))
                 self.dogImage3 = tk.Label(newDogsFrame, image=self.photo3)
                 self.dogImage3.grid(column=2, row=0)
 
-                self.im4 = Image.open(self.likedDogs[3]['Photo'])
+                self.im4 = Image.open(photoList[3])
                 self.photo4 = ImageTk.PhotoImage(self.im4.resize((85, 65)))
                 self.dogImage4 = tk.Label(newDogsFrame, image=self.photo4)
                 self.dogImage4.grid(column=3, row=0)
 
-                self.im5 = Image.open(self.likedDogs[4]['Photo'])
+                self.im5 = Image.open(photoList[4])
                 self.photo5 = ImageTk.PhotoImage(self.im5.resize((85, 65)))
                 self.dogImage5 = tk.Label(newDogsFrame, image=self.photo5)
                 self.dogImage5.grid(column=0, row=1)
 
-                self.im6 = Image.open(self.likedDogs[5]['Photo'])
+                self.im6 = Image.open(photoList[5])
                 self.photo6 = ImageTk.PhotoImage(self.im6.resize((85, 65)))
                 self.dogImage6 = tk.Label(newDogsFrame, image=self.photo6)
                 self.dogImage6.grid(column=1, row=1)
 
-                self.im7 = Image.open(self.likedDogs[6]['Photo'])
+                self.im7 = Image.open(photoList[6])
                 self.photo7 = ImageTk.PhotoImage(self.im7.resize((85, 65)))
                 self.dogImage7 = tk.Label(newDogsFrame, image=self.photo7)
                 self.dogImage7.grid(column=2, row=1)
 
-                self.im8 = Image.open(self.likedDogs[7]['Photo'])
+                self.im8 = Image.open(photoList[7])
                 self.photo8 = ImageTk.PhotoImage(self.im8.resize((85, 65)))
                 self.dogImage8 = tk.Label(newDogsFrame, image=self.photo8)
                 self.dogImage8.grid(column=3, row=1)
             except:
                 pass
         else:
-            noLikes = tk.Label(newDogsFrame, text='You dont have any matches yet!', bg='#81b38e')
+            noLikes = tk.Label(newDogsFrame,
+                text='You dont have any matches yet!', bg='#81b38e')
             noLikes.pack(pady=30)
 
         label = tk.Label(currentMessages,
             text='You have no current conversations', font=16, bg='#81b38e')
         label.pack(pady=50)
         
-
-
-
-
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=14)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
-        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: profileFrame(), text='Profile', height=3, width=14)
+        # Buttons on the bottom of the page that allow the user
+        # to switch between the main page, the messages page,
+        # and the profile page.
+        mainButton = tk.Button(self.buttonFrame,
+            bg='#81b38e', command=lambda: homeFrame(),
+            text='Home', height=3, width=14)
+        messagesButton = tk.Button(self.buttonFrame,
+            bg='#81b38e', command=lambda: messagesFrame(),
+            text='Messages', height=3, width=14)
+        profileButton = tk.Button(self.buttonFrame,
+            bg='#81b38e', command=lambda: profileFrame(),
+            text='Profile', height=3, width=14)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
         profileButton.grid(column=3, row=0)
 
+        # Destroys all widgets so the user can switch pages.
         def destroyAll():
             self.store()
             newDogsFrame.destroy()
@@ -465,12 +511,26 @@ class DogTinderApp(tk.Tk):
         female = tk.IntVar()
         other = tk.IntVar()
 
+        def dIndex():
+            return database.index(loginDatabase(self.dogProfile['Email']))
+
+        # Gets called when the user presses the prefferred gender buttons.
+        # Acts as an on/off switch.
+        def addPrefGender(gender):
+            if gender in prefGendersArr:
+                prefGendersArr.pop(prefGendersArr.index(gender))
+            else:
+                prefGendersArr.append(gender)
+
         self.refresh()
+
+        # Title and frame
         label = tk.Label(self.mainFrame, text=title,font=14, bg='#81b38e')
-        label.pack(side=tk.TOP)
         profileFrame = tk.Frame(self.mainFrame, bg='#81b38e', width=380)
+        label.pack(side=tk.TOP)
         profileFrame.pack()
 
+        # Text labels
         nameLabel = tk.Label(profileFrame, text="Name:", bg='#81b38e')
         ageLabel = tk.Label(profileFrame, text="Age:", bg='#81b38e')
         minAgeLabel = tk.Label(profileFrame, text="Minimum Age:",
@@ -488,13 +548,7 @@ class DogTinderApp(tk.Tk):
             bg='#81b38e')
         photoLabel = tk.Label(profileFrame, text='Photo:', bg='#81b38e')
 
-        def addPrefGender(gender):
-            if gender in prefGendersArr:
-                prefGendersArr.pop(prefGendersArr.index(gender))
-            else:
-                prefGendersArr.append(gender)
-        
-        # create text fields for each field
+        # Collects user entries
         nameField = tk.Entry(profileFrame)
         ageField = tk.Entry(profileFrame)
         minAgeField = tk.Entry(profileFrame)
@@ -504,28 +558,35 @@ class DogTinderApp(tk.Tk):
         phoneField = tk.Entry(profileFrame)
         prefGenderFrame = tk.Frame(profileFrame, bg='#81b38e')
         prefGender1 = tk.Checkbutton(prefGenderFrame, text='Male',
-            bg='#81b38e', command=lambda: addPrefGender('Male'), variable=male)
+            bg='#81b38e', command=lambda: addPrefGender('Male'),
+            variable=male)
         prefGender2 = tk.Checkbutton(prefGenderFrame, text='Female',
-            bg='#81b38e', command=lambda: addPrefGender('Female'), variable=female)
+            bg='#81b38e', command=lambda: addPrefGender('Female'),
+            variable=female)
         prefGender3 = tk.Checkbutton(prefGenderFrame, text='Other',
-            bg='#81b38e', command=lambda: addPrefGender('Other'), variable=other)
+            bg='#81b38e', command=lambda: addPrefGender('Other'),
+            variable=other)
         prefGender1.pack(pady=2)
         prefGender2.pack(pady=2)
         prefGender3.pack(pady=2)
-
         comboBoxFrame = tk.Frame(profileFrame, bg='#81b38e')
-        activBox1 = ttk.Combobox(comboBoxFrame, values=activities, width=17)
-        activBox2 = ttk.Combobox(comboBoxFrame, values=activities, width=17)
-        activBox3 = ttk.Combobox(comboBoxFrame, values=activities, width=17)
+        activBox1 = ttk.Combobox(comboBoxFrame,
+            values=activities, width=17)
+        activBox2 = ttk.Combobox(comboBoxFrame,
+            values=activities, width=17)
+        activBox3 = ttk.Combobox(comboBoxFrame,
+            values=activities, width=17)
         activBox1.pack(pady=2)
         activBox2.pack(pady=2)
         activBox3.pack(pady=2)
-        
-        # activitiesField = tk.Text(profileFrame, height=3, width=15)
         breedField = tk.Entry(profileFrame)
-        photoButton = tk.Button(profileFrame, text='Upload Photo', command=lambda: importImage())
+        photoButton = tk.Button(profileFrame, text='Upload Photo',
+            command=lambda: importImage())
         emailField = tk.Entry(profileFrame)
+        submit = tk.Button(profileFrame, text='Submit',
+            command=lambda: submitProfile())
         
+        # Pre-loads entries using the user's 'dogProfile'.
         def updateValues():
             try:
                 nameField.insert(0,self.dogProfile['Name'])
@@ -565,20 +626,10 @@ class DogTinderApp(tk.Tk):
                 emailField.insert(0,self.dogProfile['Email'])
             except KeyError:
                 pass
-            # for x in self.dogProfile['Preffered Gender(s)']:
-            #     if x == 'Male':
-            #         male.set(1)
-            #     elif x == 'Female':
-            #         female.set(1)
-            #     elif x == 'Other':
-            #         other.set(1)
-
 
         updateValues()
 
-        submit = tk.Button(profileFrame, text='Submit', command=lambda: submitProfile())
-
-        # use the grid layout manager to arrange the widgets
+        # Arranges and displays the text labels and entries.
         nameLabel.grid(row=0, column=0, pady=2)
         nameField.grid(row=0, column=1, pady=2)
         ageLabel.grid(row=1, column=0, pady=2)
@@ -603,29 +654,34 @@ class DogTinderApp(tk.Tk):
         photoButton.grid(row=10, column=1, pady=2)
         submit.grid(row=11, column=1, pady=5)
 
+        # Gets called when user presses the upload image button.
+        # Checks to see whether file is an image.
+        # If so, it adds it to the user's profile.
+        # If it isnt, it adds a stock photo to the user's profile
         def importImage():
             try:
                 self.dogProfile['Photo'] = fd.askopenfilename(title='Import a file', initialdir='/')
                 saveData()
                 self.store()
-                if 'update' in title.lower():
-                    database[database.index(loginDatabase(self.dogProfile['Email']))]['Photo'] = self.dogProfile['Photo']
-                im = Image.open(self.dogProfile['Photo'])
+                try:
+                    im = Image.open(self.dogProfile['Photo'])
+                    if 'update' in title.lower():
+                        database[dIndex()]['Photo'] = self.dogProfile['Photo']
+                except KeyError or AttributeError:
+                    self.dogProfile['Photo'] = stockImage
+                    raise AttributeError
                 print(self.dogProfile['Photo'])
                 showinfo('Image Upload', 'Image upload was successful!')
             except:
-                showinfo('Error Encountered', 'An error occured. Image upload was unsuccessful')
+                showinfo('Error Encountered',
+                    'An error occured. Image upload was unsuccessful')
             
-        # def prefGenders():
-        #     prefGendersArr = []
-        #     if male:
-        #         prefGendersArr.append('Male')
-        #     if female:
-        #         prefGendersArr.append('Female')
-        #     if other:
-        #         prefGendersArr.append('Other')
-        #     return prefGendersArr
 
+        # This method stores whatever field you give it to 'dogProfile'.
+        # Also, if the field is empty, it notifies the user and prevents
+        # the user from submitting their data.
+        # The 'string' variable is used as a key in 'dogProfile',
+        # while the 'field' variable is the field that collects user entries.
         def setProfile(string, field):
             try:
                 if field.get() == '':
@@ -636,13 +692,13 @@ class DogTinderApp(tk.Tk):
                 field.insert(0, 'Empty')
                 showinfo('Error', (string + ' field is empty.'))
 
+        # This method is called when the user presses the 'submit' button.
+        # It will not allow the user to submit data if:
+        # forbidden characters are entered, field(s) are empty,
+        # or if the three age fields are not numbers.
         def submitProfile():
             setProfile('Name', nameField)
             setProfile('Age', ageField)
-            try:
-                self.dogProfile['Gender'] = genderField.get()
-            except:
-                pass
             setProfile('Breed', breedField)
             setProfile('Phone', phoneField)
             setProfile('Email', emailField)
@@ -650,6 +706,12 @@ class DogTinderApp(tk.Tk):
             setProfile('temp', activBox2)
             setProfile('temp', activBox3)
             self.dogProfile.pop('temp')
+            self.dogProfile['Preffered Gender(s)'] = prefGendersArr
+
+            try:
+                self.dogProfile['Gender'] = genderField.get()
+            except:
+                pass
             try:
                 self.dogProfile['Age'] = int(ageField.get())
             except:
@@ -657,8 +719,6 @@ class DogTinderApp(tk.Tk):
                 ageField.delete(0, tk.END)
                 ageField.insert(0, 'Empty')
                 showinfo('Error', 'Age must be an integer.')
-            self.dogProfile['Preffered Gender(s)'] = prefGendersArr
-                # showinfo('Error', 'Preffered Gender fields are missing')
             try:
                 self.dogProfile['Minimum Age'] = int(minAgeField.get())
                 self.dogProfile['Maximum Age'] = int(maxAgeField.get())
@@ -675,71 +735,72 @@ class DogTinderApp(tk.Tk):
                 except:
                     maxAgeField.delete(0, tk.END)
                     maxAgeField.insert(0, 'Empty')
+
             if not ('Empty' in 
                     [activBox1.get(), activBox2.get(),activBox3.get()]):
+
                 favActivies = list(set([activBox1.get(), activBox2.get(),
                     activBox3.get()]))
                 self.dogProfile['Favorite Activities'] = favActivies
-            # self.dogProfile['Favorite Activities'] = list((activitiesField.get("1.0", "end-1c")).split('\n'))
-            print(self.dogProfile)
+
             self.store()
 
+            # Checks to see if criteria is met, if so it either adds
+            # or updates the database with the user's informantion.
             if ((checkForbidden(nameField.get()) == 'Forbidden')
-                or (checkForbidden(ageField.get()) == 'Forbidden')
-                or (checkForbidden(genderField.get()) == 'Forbidden')
-                or (checkForbidden(breedField.get()) == 'Forbidden')
-                or (checkForbidden(minAgeField.get()) == 'Forbidden')
-                or (checkForbidden(maxAgeField.get()) == 'Forbidden')):
-
+                    or (checkForbidden(ageField.get()) == 'Forbidden')
+                    or (checkForbidden(genderField.get()) == 'Forbidden')
+                    or (checkForbidden(breedField.get()) == 'Forbidden')
+                    or (checkForbidden(minAgeField.get()) == 'Forbidden')
+                    or (checkForbidden(maxAgeField.get()) == 'Forbidden')):
                 favActivies.clear()
                 showinfo('Error', 'Forbidden Character Entered!')
             elif ('Empty' in [nameField.get(), ageField.get(),
-                    genderField.get(), breedField.get(), phoneField.get(),
-                    minAgeField.get(), maxAgeField.get(), activBox1.get(),
-                    activBox2.get(), activBox3.get()]):
+                        genderField.get(), breedField.get(), phoneField.get(),
+                        minAgeField.get(), maxAgeField.get(), activBox1.get(),
+                        activBox2.get(), activBox3.get()]):
                     favActivies.clear()
             else:
-                try:
-                    im = Image.open(self.dogProfile['Photo'])
-                except KeyError or AttributeError:
-                    self.dogProfile['Photo'] = stockImage
                 label.destroy()
                 profileFrame.destroy()
                 comboBoxFrame.destroy()
                 if 'sign up' in title.lower():
                     database.append(self.dogProfile)
+                elif 'update' in title.lower():
+                    database[dIndex()] = self.dogProfile
                 saveData()
                 self.main()
 
+    # This is where the user can view their profile.
     def profile(self):
         self.refresh()
-        try:
-            self.im = Image.open(self.dogProfile['Photo'])
-            self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
-            self.dogImage = tk.Label(self.mainFrame, image=self.photo)
-            self.dogImage.pack(pady=5)
-        except IndexError:
-            showinfo(title='Sorry', message='No current matches :(')
-        except KeyError or AttributeError:
-            self.im = Image.open(stockImage)
-            self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
-            self.dogImage = tk.Label(self.mainFrame, image=self.photo)
-            self.dogImage.pack(pady=5)
 
+        # Displays the user's profile picture.
+        self.im = Image.open(self.dogProfile['Photo'])
+        self.photo = ImageTk.PhotoImage(self.im.resize((380, 280)))
+        self.dogImage = tk.Label(self.mainFrame, image=self.photo)
+        self.dogImage.pack(pady=5)
+    
+        # Displays the user's name, age and gender.
         interactFrame = tk.Frame(self.mainFrame, bg='#81b38e')
         interactFrame.pack()
-        name = tk.Label(interactFrame, bg='#81b38e', text=('Name: ' + self.dogProfile['Name']), font=12)
-        age = tk.Label(interactFrame, bg='#81b38e', text=('Age: ' + str(self.dogProfile['Age'])))
-        gender = tk.Label(interactFrame, bg='#81b38e', text=('Gender: ' + str(self.dogProfile['Gender'])))
+        name = tk.Label(interactFrame, bg='#81b38e',
+            text=('Name: ' + self.dogProfile['Name']), font=12)
+        age = tk.Label(interactFrame, bg='#81b38e',
+            text=('Age: ' + str(self.dogProfile['Age'])))
+        gender = tk.Label(interactFrame, bg='#81b38e',
+            text=('Gender: ' + str(self.dogProfile['Gender'])))
         name.pack(padx=40)
         gender.pack(padx=40)
         age.pack(padx=40)
 
+        # Displays breed, favorite activites, and preffered age range.
         descFrame = tk.Frame(self.mainFrame, bg='#81b38e')
         descFrame.pack(pady=20)
         introLabel = tk.Label(descFrame, text='Description: ',
             bg='#81b38e', font=('calibre', 16))
-        breedLabel = tk.Label(descFrame, text=('Breed: ' + self.dogProfile['Breed']),
+        breedLabel = tk.Label(descFrame,
+            text=('Breed: ' + self.dogProfile['Breed']),
             bg='#81b38e', font=('calibre', 10))
         activitiesLabel = tk.Label(descFrame, text=('Favorite Activities: ' +
             ', '.join(self.dogProfile['Favorite Activities'])), bg='#81b38e',
@@ -747,9 +808,12 @@ class DogTinderApp(tk.Tk):
         prefLabel = tk.Label(descFrame, text=('Preffered Gender(s): ' +
             ', '.join(self.dogProfile['Preffered Gender(s)'])), bg='#81b38e',
             font=('calibre', 10))
-        prefAgeLabel = tk.Label(descFrame, text=('Preffered Age Range: ' + str(self.dogProfile['Minimum Age']) + ' - ' + str(self.dogProfile['Maximum Age'])),
+        prefAgeLabel = tk.Label(descFrame,
+            text=('Preffered Age Range ' + str(self.dogProfile['Minimum Age'])
+                + ' - ' + str(self.dogProfile['Maximum Age'])),
             bg='#81b38e', font=('calibre', 10))
-        editProfileButton = tk.Button(descFrame, bg='#81b38e', command=lambda: editProfile(), text='Edit Profile')
+        editProfileButton = tk.Button(descFrame,
+            bg='#81b38e', command=lambda: editProfile(), text='Edit Profile')
         introLabel.grid(pady=10)
         breedLabel.grid(row=1, column=0)
         activitiesLabel.grid(row=2, column=0)
@@ -757,15 +821,22 @@ class DogTinderApp(tk.Tk):
         prefAgeLabel.grid(row=4, column=0)
         editProfileButton.grid(row=5, column=0, pady=20)
 
-
-
-        mainButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: homeFrame(), text='Home', height=3, width=14)
-        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e', command=lambda: messagesFrame(), text='Messages', height=3, width=14)
-        profileButton = tk.Button(self.buttonFrame, bg='#81b38e', text='Profile', height=3, width=14)
+        # Buttons on the bottom of the page that allow the user
+        # to switch between the main page, the messages page,
+        # and the profile page.
+        mainButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            command=lambda: homeFrame(), text='Home',
+            height=3, width=14)
+        messagesButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            command=lambda: messagesFrame(), text='Messages',
+            height=3, width=14)
+        profileButton = tk.Button(self.buttonFrame, bg='#81b38e',
+            text='Profile', height=3, width=14)
         mainButton.grid()
         messagesButton.grid(column=1, row=0)
         profileButton.grid(column=3, row=0)     
 
+        # Destroys all widgets so the user can switch pages.
         def destroyAll():
             interactFrame.destroy()
             descFrame.destroy()
@@ -786,36 +857,28 @@ class DogTinderApp(tk.Tk):
             destroyAll()
             self.signUp('Update Profile')
 
+    # This method deserializes ldFile, pdFile, iFile, and message,
+    # and sets them equal to likedDogs, potentialDog, index, and messagesList.
     def refresh(self):
-        ldFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt'
-        pdFile = (r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
-            + r'\potential.txt')
-        iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
-        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
-
-        with open(ldFile, 'rb') as liked:
+        with open(self.ldFile, 'rb') as liked:
             self.likedDogs = list(pickle.load(liked))
-        with open(pdFile, 'rb') as potential:
+        with open(self.pdFile, 'rb') as potential:
             self.potentialDog = list(pickle.load(potential))
-        with open(iFile, 'rb') as liked:
+        with open(self.iFile, 'rb') as liked:
             self.index = int(pickle.load(liked))
-        with open(message, 'rb') as messaging:
+        with open(self.message, 'rb') as messaging:
             self.messagesList = list(pickle.load(messaging))
 
+    # This method takes likedDogs, potentialDog, index, and messagesList,
+    # and serializes them to ldFile, pdFile, iFile, and message.
     def store(self):
-        ldFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\liked.txt'
-        pdFile = (r'C:\Users\omara\Documents\Fall2022\CSC1500 Final'
-            + r'\potential.txt')
-        iFile = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\index.txt'
-        message = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\message.txt'
-
-        with open(ldFile, 'wb') as liked:
+        with open(self.ldFile, 'wb') as liked:
             pickle.dump(self.likedDogs, liked)
-        with open(pdFile, 'wb') as potential:
+        with open(self.pdFile, 'wb') as potential:
             pickle.dump(self.potentialDog, potential)
-        with open(iFile, 'wb') as liked:
+        with open(self.iFile, 'wb') as liked:
             pickle.dump(self.index, liked)
-        with open(message, 'wb') as messaging:
+        with open(self.message, 'wb') as messaging:
             pickle.dump(self.messagesList, messaging)
 
 
@@ -823,22 +886,6 @@ database = loadData()
 print(len(database))
 
 saveData()
-
-# database = loadData()
-
-print(len(loadData()))
-
-# saveData()
-# dogProfile = {}
-# dogProfile['Photo'] = r'C:\Users\omara\Documents\Fall2022\CSC1500 Final\dog-cat-full-dataset\data\test\dogs\dog.0.jpg'
-# dogProfile["Favorite Activities"] = ['Swimming', 'Jumping', 'Napping']
-# dogProfile['Maximum Age'] = 12
-# dogProfile['Minumum Age'] = 7
-
-# dogProfile = create(1)
-
-# print(create(5))
-# database[3]['Email'] = 'idk'
 
 app = DogTinderApp()
 app.mainloop()
